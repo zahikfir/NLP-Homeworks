@@ -8,8 +8,8 @@ def SplitTextToSentences(text, delimiters):
         # replace every occurance of the delimiter with a line ending char
         text = str(text).replace(delimiter, delimiter + "\r\n")
    
-    # return an arrat of sentences
-    return text.split("\r\n")
+    # return an array of non empty sentences
+    return [str(sentence) for sentence in text.split("\r\n") if ((not str(sentence).isspace()) & len(sentence))]
 
 #get the command line argument
 if len(sys.argv) < 2: sys.exit("Please enter a data directory path")
