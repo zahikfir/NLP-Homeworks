@@ -45,7 +45,7 @@ def SeparateTokens2(text, Tokens):
     return SeperatedText
 
 
-Tokens = [".","!","?",",",":",";","'",'"']
+Tokens = ["." , "!" , "?" , "," , ":" , ";" ,"'" , '"' , '<' , '>' , '@' , '#', '$' , '%' , '^' , '&' , '*' , '(' , ')' , '+', '=', '[' , ']' , '{' , '}' , "/" , "\\" , '_' , '~' ]
 
 txtFilesList = [ os.path.join(currentDir, f) for f in os.listdir(currentDir) if (os.path.isfile(os.path.join(currentDir, f)) & str(f).endswith("_sentences.txt"))]
 
@@ -59,7 +59,7 @@ for f in txtFilesList:
     outputFileStream = codecs.open(f[0:(f.rfind("_sentences.txt"))] + ".out.txt" , "w", "utf-8")
 
     #read the text and seperate tokens
-    outputFileStream.writelines((SeparateTokens1(inputFileStream.read(), Tokens)))
+    #outputFileStream.writelines((SeparateTokens1(inputFileStream.read(), Tokens)))
 
     print("\t\t Done in ",time.clock() - StartTime," sec")
 
