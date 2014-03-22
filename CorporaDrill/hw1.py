@@ -1,15 +1,19 @@
-import sys, os, codecs
+import sys, os, codecs, re
 
 # split a text to sentences using the given delimiters list
 def SplitTextToSentences(text, delimiters):
     
-    # for each delimiter in the delimiters list
-    for delimiter in delimiters:
-        # replace every occurance of the delimiter with a line ending char
-        text = str(text).replace(delimiter, delimiter + "\r\n")
+    # get an iterator to all the occurances of the delimiters and their concataneted regular expressions
+    ReResult = re.finditer("[" + ''.join(delimiters) + "][" + '( )*'.join(delimiters) + "]*",text)
+
+    # add new line fid after every occurance
+    i = 0
+    for iter in ReResult:
+        text = text[0:iter.regs[0][1] + i*2] + "\r\n" + text[iter.regs[0][1] + i*2:]
+        i = i+1
    
     # return an array of non empty sentences
-    return [str(sentence) for sentence in text.split("\r\n") if ((not str(sentence).isspace()) & len(sentence))]
+    return [str(sentence) for sentence in text.split("\r\n") if ((not str(sentence).isspace()) and len(sentence) > 0)]
 
 #get the command line argument
 if len(sys.argv) < 2: sys.exit("Please enter a data directory path")
