@@ -36,3 +36,6 @@ for f in txtFilesList:
 
     #read the text and split it by the line ending delimiters
     outputFileStream.writelines(("%s\r\n" % l for l in SplitTextToSentences(inputFileStream.read(), lineEndingDelimiters)))
+
+# do section 2
+import hw1_Q2
