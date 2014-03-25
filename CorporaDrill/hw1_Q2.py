@@ -29,8 +29,8 @@ def SeparateTokens(text):
     Index = 1;
     StartTime = time.clock()
     while Index < (len(text)-1):
-        if not( (text[Index] in SpecialSeparators) and  (text[Index-1].isalpha()) and (text[Index+1].isalpha()) ):
-            if not( (text[Index] in SpecialDigitSeparators) and  (text[Index-1].isdigit()) and (text[Index+1].isdigit()) ):
+        if not( (text[Index] in SpecialSeparators) and  (text[Index-1].isalpha()) and (text[Index+1].isalpha()) ):    # leave ' " - when in a word
+            if not( (text[Index] in SpecialDigitSeparators) and  (text[Index-1].isdigit()) and (text[Index+1].isdigit()) ): # leave . , when in a digit
                 if text[Index] in SimpleSeparators:
                     if (text[Index-1] != ' ') and (not(text[Index-1] in SimpleSeparators)):
                         TokonsList.append(text[LastCheckedIndex:Index])                   
