@@ -1,17 +1,30 @@
 import sys, os, codecs, re
 
+# replace every linefid symbol with closeRowLineFid symbols (support multiple text editors)
+def ReplaceLFwithCRLF(text):
+    return str(text).replace("\n","\r\n")
+
 # split a text to sentences using the given delimiters list
 def SplitTextToSentences(text, delimiters):
     
-    # get an iterator to all the occurances of the delimiters and their concataneted regular expressions
-    ReResult = re.finditer("[" + ''.join(delimiters) + "][" + '( )*'.join(delimiters) + "]*",text)
+    text = ReplaceLFwithCRLF(text)
+
+    # get an iterator to all the occurances of the delimiters and their concataneted regular expressions , also the one that ends with double quates
+    ReResult = re.finditer("[" + ''.join(delimiters) + "][" + ''.join(delimiters) + "]*(\")*",text)
 
     # add new line fid after every occurance
     SentencesList = []
     LastIndex = 0;
     for iter in ReResult:
-        SentencesList.append(text[LastIndex:iter.regs[0][1]])
-        LastIndex = iter.regs[0][1]
+
+        currentEndingIndex = iter.regs[0][1] 
+        # check for a number from format : digits.digits
+        if (text[currentEndingIndex-1]=="." and currentEndingIndex>1 and text[currentEndingIndex].isdigit() and text[currentEndingIndex-2].isdigit()):
+            # in this case we don't need to add a lie fid
+            continue
+        SentencesList.append(text[LastIndex:currentEndingIndex])
+        LastIndex = currentEndingIndex
+
     text = "\r\n".join(SentencesList)
    
     # return an array of non empty sentences
@@ -37,7 +50,11 @@ for f in txtFilesList:
     outputFileStream = codecs.open(f[0:(f.rfind(".txt"))] + "_sentences.txt" , "w", "utf-8")
 
     #read the text and split it by the line ending delimiters
-    outputFileStream.writelines(("%s\r\n" % l for l in SplitTextToSentences(inputFileStream.read(), lineEndingDelimiters)))
+    splitedText = SplitTextToSentences(inputFileStream.read(), lineEndingDelimiters)
+    outputFileStream.writelines(("%s\r\n" % l for l in splitedText))
 
 # do section 2
 import hw1_Q2
+
+# do section 3
+import hw1_Q3
