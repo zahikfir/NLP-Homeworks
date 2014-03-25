@@ -23,4 +23,6 @@ for f in txtFilesList:
     freqs = Counter(inputFileStream.read().split()).most_common()
     
     # output the freqs table to the output file
-    outputFileStream.writelines(("%6d|%20s|%6d \r\n" % (idx + 1, val[0], val[1]) for idx, val in enumerate(freqs)))
+    outputFileStream.writelines("Freq           Token          Rank\r\n")
+    outputFileStream.writelines(("%15d%15s%15d \r\n" % (idx + 1, val[0], val[1]) for idx, val in enumerate(freqs)))
+    
