@@ -65,7 +65,7 @@ for f in txtFilesList:
     outputFileStream = codecs.open(f[0:(f.rfind("_sentences.txt"))] + ".out.txt" , "w", "utf-8")
 
     #read the text and seperate tokens
-    outputFileStream.writelines((SeparateTokens(inputFileStream.read(), Tokens)))
+    outputFileStream.writelines((SeparateTokens(inputFileStream.read())))
 
     print("\t\t Done in ",time.clock() - StartTime," sec")
 
