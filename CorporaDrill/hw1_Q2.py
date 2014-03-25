@@ -7,9 +7,12 @@ def SeparateTokens(text):
     # Always add spaces before and after this tokens
     SimpleSeparators = ["." , "!" , "?" , "," , ":" , ";" , '<' , '>' , '@' , '#', '$' , '%' , '^' , '&' , '*' , '(' , ')' , '+', '=', '[' , ']' , '{' , '}' , "/" , "\\" , '_' , '~',"-","'" ,'"' ]
 
-    # Add spaces before and after this tokens only when not between 2 letters
+    # Add spaces before and after this tokens only when not between 2 letters (???"? ?'?? ??-?????)
     SpecialSeparators = ["-","'" , '"']
     
+    # Add spaces before and after this tokens only when not between 2 Digits (1,000,000 5.2)
+    SpecialDigitSeparators = [".",","]
+
     # Holds separated tokens
     TokonsList = []
 
@@ -27,13 +30,14 @@ def SeparateTokens(text):
     StartTime = time.clock()
     while Index < (len(text)-1):
         if not( (text[Index] in SpecialSeparators) and  (text[Index-1].isalpha()) and (text[Index+1].isalpha()) ):
-            if text[Index] in SimpleSeparators:
-                if (text[Index-1] != ' ') and (not(text[Index-1] in SimpleSeparators)):
-                    TokonsList.append(text[LastCheckedIndex:Index])                   
-                    LastCheckedIndex = Index
-                if text[Index+1] != ' ': 
-                    TokonsList.append(text[LastCheckedIndex:Index+1])             
-                    LastCheckedIndex = Index+1
+            if not( (text[Index] in SpecialDigitSeparators) and  (text[Index-1].isdigit()) and (text[Index+1].isdigit()) ):
+                if text[Index] in SimpleSeparators:
+                    if (text[Index-1] != ' ') and (not(text[Index-1] in SimpleSeparators)):
+                        TokonsList.append(text[LastCheckedIndex:Index])                   
+                        LastCheckedIndex = Index
+                    if text[Index+1] != ' ': 
+                        TokonsList.append(text[LastCheckedIndex:Index+1])             
+                        LastCheckedIndex = Index+1
         Index = Index+1
  
     # Check the last character
