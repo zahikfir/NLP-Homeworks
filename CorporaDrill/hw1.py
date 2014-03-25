@@ -7,10 +7,12 @@ def SplitTextToSentences(text, delimiters):
     ReResult = re.finditer("[" + ''.join(delimiters) + "][" + '( )*'.join(delimiters) + "]*",text)
 
     # add new line fid after every occurance
-    i = 0
+    SentencesList = []
+    LastIndex = 0;
     for iter in ReResult:
-        text = text[0:iter.regs[0][1] + i*2] + "\r\n" + text[iter.regs[0][1] + i*2:]
-        i = i+1
+        SentencesList.append(text[LastIndex:iter.regs[0][1]])
+        LastIndex = iter.regs[0][1]
+    text = "\r\n".join(SentencesList)
    
     # return an array of non empty sentences
     return [str(sentence) for sentence in text.split("\r\n") if ((not str(sentence).isspace()) and len(sentence) > 0)]
