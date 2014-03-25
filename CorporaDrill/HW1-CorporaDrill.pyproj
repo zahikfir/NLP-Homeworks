@@ -6,7 +6,7 @@
     <ProjectGuid>ebbf758f-35cb-40c8-b41d-a890749861bf</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>hw1_Q3.py</StartupFile>
+    <StartupFile>hw1.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
