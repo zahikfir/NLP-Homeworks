@@ -1,3 +1,9 @@
+#********************** NLP **********************#
+# H.W 1
+# Haim Shalelashvily    200832780
+# Zahi Kfir             200681476
+#********************** NLP **********************#
+
 import sys, os, codecs, re, time
 
 # replace every linefid symbol with closeRowLineFid symbols (support multiple text editors)
