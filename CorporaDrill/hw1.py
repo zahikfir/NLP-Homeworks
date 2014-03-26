@@ -33,9 +33,11 @@ def SplitTextToSentences(text, delimiters):
         SentencesList.append(text[LastIndex:currentEndingIndex])
         # update the last handled index
         LastIndex = currentEndingIndex
+
+    # add the last sentence if available
+    SentencesList.append(text[LastIndex:])
     # concatenate all the sentences by adding the CloseRowLineFid between them
     text = "\r\n".join(SentencesList)
-   
     # return an array of non empty sentences ( Remove also the old closeLineLineFid symbols)
     return [str(sentence) for sentence in text.split("\r\n") if ((not str(sentence).isspace()) and len(sentence) > 0)]
 
@@ -113,6 +115,8 @@ for f in txtFilesList:
     #read the text and split it by the line ending delimiters
     listOfSentences = SplitTextToSentences(inputFileStream.read(), lineEndingDelimiters)
     outputFileStream.writelines(("%s\r\n" % l for l in listOfSentences))
+    outputFileStream.close()
+
 
 # section 2:
 txtFilesList = [ os.path.join(currentDir, f) for f in os.listdir(currentDir) if (os.path.isfile(os.path.join(currentDir, f)) & str(f).endswith("_sentences.txt"))]
@@ -128,6 +132,7 @@ for f in txtFilesList:
 
     #read the text and seperate tokens
     outputFileStream.writelines((SeparateTokens(inputFileStream.read())))
+    outputFileStream.close()
 
     print("\t\t Done in ",time.clock() - StartTime," sec")
 
@@ -154,3 +159,5 @@ globalFreqs = globalFreqs.most_common()
 # output the freqs table to the output file
 outputFileStream = codecs.open(currentDir + "\\freqlist.txt" , "w", "utf-8")
 outputFileStream.writelines(("%15d\t%15s\t%15d \r\n" % (idx + 1, val[0], val[1]) for idx, val in enumerate(globalFreqs)))
+outputFileStream.close()
+
