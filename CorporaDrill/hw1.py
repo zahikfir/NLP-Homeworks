@@ -23,7 +23,11 @@ def SplitTextToSentences(text, delimiters):
         currentEndingIndex = iter.regs[0][1] 
         # check if we found a fraction. format : digit*.digit*
         if (text[currentEndingIndex-1]=="." and currentEndingIndex>1 and text[currentEndingIndex].isdigit() and text[currentEndingIndex-2].isdigit()):
-            # in this case we don't need to add a lie fid , we just found a number
+            # in this case we don't need to add a line fid , we just found a number
+            continue
+        # check if we found a fullstop mark inside a ward. format : alpha.alpha
+        if (text[currentEndingIndex-1]=="." and currentEndingIndex>1 and text[currentEndingIndex].isalpha() and text[currentEndingIndex-2].isalpha()):
+            # in this case we don't need to add a line fid
             continue
         # add the current sentences to the sentences list
         SentencesList.append(text[LastIndex:currentEndingIndex])
