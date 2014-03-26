@@ -1,4 +1,3 @@
-
 import sys, os, codecs,time
 
 currentDir = sys.argv[1]
