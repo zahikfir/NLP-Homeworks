@@ -44,7 +44,7 @@ def SeparateTokens(text):
     SpecialSeparators = ["-","'" , '"']
     
     # Add spaces before and after this tokens only when not between 2 Digits (1,000,000 5.2)
-    SpecialDigitSeparators = [".",","]
+    SpecialDigitSeparators = [".",",","/"]
 
     # Holds separated tokens
     TokonsList = []
