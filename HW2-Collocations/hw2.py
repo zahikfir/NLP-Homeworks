@@ -32,16 +32,18 @@ tTest_Select_outStream = codecs.open(os.path.join(outputDir, "tTest_select.txt")
 PMI_Raw_outStream = codecs.open(os.path.join(outputDir, "PMI_raw.txt"), "w", "utf-8")
 PMI_Select_outStream = codecs.open(os.path.join(outputDir, "PMI_select.txt"), "w", "utf-8")
 
+from collections import Counter
+
 # Run Raw Frequency analysis
 StartTime = time.clock()
 import RawFrequencyAnalysis
-RawFrequencyAnalysis.RawFrequencyAnalysis(txtFilesList,RF_Raw_outStream,RF_Select_outStream)
+Collocations_CountedDictionary = RawFrequencyAnalysis.RawFrequencyAnalysis(txtFilesList,RF_Raw_outStream,RF_Select_outStream)
 RawFrequencyTime = time.clock() - StartTime
 
 # Run t-test analysis
 StartTime = time.clock()
 import tTestAnalysis
-tTestAnalysis.tTestAnalysis(txtFilesList,tTest_Raw_outStream,tTest_Select_outStream)
+tTestAnalysis.tTestAnalysis(txtFilesList,tTest_Raw_outStream,tTest_Select_outStream, Collocations_CountedDictionary)
 tTestTime = time.clock() - StartTime
 
 # Run PMI analysis

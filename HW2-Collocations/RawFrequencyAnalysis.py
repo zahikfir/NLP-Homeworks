@@ -53,4 +53,4 @@ def RawFrequencyAnalysis(txtFilesList,RF_Raw_outStream,RF_Select_outStream):
     # TODO
     # .most_common(100) is random when equally appear  (sort it Alpha-Beth)
     
-    return 'Done'
+    return Collocations_CountedDictionary
