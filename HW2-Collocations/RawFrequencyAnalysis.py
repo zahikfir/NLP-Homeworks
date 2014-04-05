@@ -20,7 +20,7 @@ def RawFrequencyAnalysis(txtFilesList,RF_Raw_outStream,RF_Select_outStream):
         inputFile = inputFile.lower()       # when using english we want "Open minded" to be equal to "open minded"
 
         # Split the text to sentences, (No collocation crosses two sentences)
-        f_Sentences = inputFile.split('\r\n')
+        f_Sentences = inputFile.split(os.linesep)
         
         # Analyze each sentence separately 
         for Sentence in f_Sentences: 
@@ -36,7 +36,7 @@ def RawFrequencyAnalysis(txtFilesList,RF_Raw_outStream,RF_Select_outStream):
     Top100Collocations = Collocations_CountedDictionary.most_common(100)
 
     # Output the top 100 Raw Frequency scores into RawFrequency_raw.txt file
-    RF_Raw_outStream.writelines(("%15d\t%30s\t%.5f \r\n" % (idx + 1, val[0], val[1]*1000/len(Collocations_CountedDictionary) ) for idx, val in enumerate(Top100Collocations)))
+    RF_Raw_outStream.writelines((("%15d\t%30s\t%.5f " + os.linesep) % (idx + 1, val[0], val[1]*1000/len(Collocations_CountedDictionary) ) for idx, val in enumerate(Top100Collocations)))
     RF_Raw_outStream.close() 
     
     # List the collocations with exactly 20 appearances
@@ -46,7 +46,7 @@ def RawFrequencyAnalysis(txtFilesList,RF_Raw_outStream,RF_Select_outStream):
             TwentyAppearances.append((Key,Value))
 
     # Output the collocations with exactly 20 appearances with their Raw Frequency score into RawFrequency_select.txt file
-    RF_Select_outStream.writelines(("%15d\t%30s\t%.5f \r\n" % (idx + 1, val[0], val[1]*1000/len(Collocations_CountedDictionary) ) for idx, val in enumerate(TwentyAppearances)))
+    RF_Select_outStream.writelines((("%15d\t%30s\t%.5f " + os.linesep) % (idx + 1, val[0], val[1]*1000/len(Collocations_CountedDictionary) ) for idx, val in enumerate(TwentyAppearances)))
     RF_Select_outStream.close()
 
 
