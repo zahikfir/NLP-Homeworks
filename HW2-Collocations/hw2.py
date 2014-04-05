@@ -34,18 +34,27 @@ PMI_Raw_outStream = codecs.open(outputDir + "PMI_raw.txt" , "w", "utf-8")
 PMI_Select_outStream = codecs.open(outputDir + "PMI_select.txt" , "w", "utf-8")
 
 # Run Raw Frequency analysis
+StartTime = time.clock()
 import RawFrequencyAnalysis
 RawFrequencyAnalysis.RawFrequencyAnalysis(txtFilesList,RF_Raw_outStream,RF_Select_outStream)
+RawFrequencyTime = time.clock() - StartTime
 
 # Run t-test analysis
+StartTime = time.clock()
 import tTestAnalysis
 tTestAnalysis.tTestAnalysis(txtFilesList,tTest_Raw_outStream,tTest_Select_outStream)
+tTestTime = time.clock() - StartTime
 
 # Run PMI analysis
+StartTime = time.clock()
 import PmiAnalysis
 PmiAnalysis.PmiAnalysis(txtFilesList,PMI_Raw_outStream,PMI_Select_outStream)
+PmiTime = time.clock() - StartTime
 
 
+print("\nRaw Frequency analysis time (sec):\t"  ,RawFrequencyTime)
+print("t-test analysis time (sec):\t\t"         ,tTestTime)
+print("PMI analysis time (sec):\t\t"            ,PmiTime,'\n')
 
 
 
