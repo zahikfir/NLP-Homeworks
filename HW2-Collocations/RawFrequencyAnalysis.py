@@ -21,7 +21,10 @@ def RawFrequencyAnalysis(txtFilesList,RF_Raw_outStream,RF_Select_outStream):
 
         # Split the text to sentences, (No collocation crosses two sentences)
         f_Sentences = inputFile.split(os.linesep)
-        
+
+        # close input file 
+        inputFileStream.close()
+
         # Analyze each sentence separately 
         for Sentence in f_Sentences: 
             
@@ -36,7 +39,7 @@ def RawFrequencyAnalysis(txtFilesList,RF_Raw_outStream,RF_Select_outStream):
     Top100Collocations = Collocations_CountedDictionary.most_common(100)
 
     # Output the top 100 Raw Frequency scores into RawFrequency_raw.txt file
-    RF_Raw_outStream.writelines((("%15d\t%30s\t%.5f " + os.linesep) % (idx + 1, val[0], val[1]*1000/len(Collocations_CountedDictionary) ) for idx, val in enumerate(Top100Collocations)))
+    RF_Raw_outStream.writelines((("%15d\t%20s %20s\t\t\t\t%f " + os.linesep) % (idx + 1, val[0].split()[1],val[0].split()[0], val[1]*1000/len(Collocations_CountedDictionary) ) for idx, val in enumerate(Top100Collocations)))
     RF_Raw_outStream.close() 
     
     # List the collocations with exactly 20 appearances
