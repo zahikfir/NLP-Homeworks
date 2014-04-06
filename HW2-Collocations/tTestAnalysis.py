@@ -41,7 +41,7 @@ def tTestAnalysis(txtFilesList,tTest_Raw_outStream,tTest_Select_outStream, collo
         if not sampleVariance == 0 : tScoreDic[collocation] = (math.fabs(sampleVariance - meanOfDistributation)) / (math.sqrt(sampleVariance / numOfTokens))
 
     # Get the top 100 collocations
-    Top100Collocations = sorted(tScoreDic.items(), key=operator.itemgetter(1))[0:100]
+    Top100Collocations = sorted(tScoreDic.items(), key=operator.itemgetter(1),reverse=True)[0:100]
 
     # Output the top 100 tTest scores into tTest_raw.txt file
     tTest_Raw_outStream.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(Top100Collocations)))
