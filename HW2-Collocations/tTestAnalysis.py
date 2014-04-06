@@ -57,5 +57,5 @@ def tTestAnalysis(txtFilesList,tTest_Raw_outStream,tTest_Select_outStream, collo
     tTest_Select_outStream.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(TwentyAppearances)))
     tTest_Select_outStream.close()
 
-    return 'Done'
+    return tokensFreqs
     
