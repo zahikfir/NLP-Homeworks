@@ -37,6 +37,9 @@ def PmiAnalysis(txtFilesList,PMI_Raw_outStream,PMI_Select_outStream,collocations
         if Value == 20:
             TwentyAppearances.append((Key,PmiScoreDic[Key]))  
 
+    # Sort the collocations with exactly 20 appearances by the PMI score
+    TwentyAppearances.sort(key=operator.itemgetter(1),reverse= True)
+
     # Output the collocations with exactly 20 appearances with their PMI score into PMI_select.txt file
     PMI_Select_outStream.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(TwentyAppearances)))
     PMI_Select_outStream.close()
