@@ -16,9 +16,11 @@ def tTestAnalysis(txtFilesList,tTest_Raw_outStream,tTest_Select_outStream, collo
 
         # open the input file
         inputFileStream  = codecs.open(f,"r","utf-8")
+        inputFile = inputFileStream.read()
+        inputFile = inputFile.lower()       # when using english we want "Open minded" to be equal to "open minded"
 
         # update the dictionary of tokens of the current text file to the global freq dictionary
-        tokensFreqs.update(Counter(inputFileStream.read().split()))
+        tokensFreqs.update(Counter(inputFile.split()))
     
     # get the number of tokens in all the corpus
     numOfTokens = sum(tokensFreqs.values())
