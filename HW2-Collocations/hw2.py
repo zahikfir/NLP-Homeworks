@@ -43,13 +43,13 @@ RawFrequencyTime = time.clock() - StartTime
 # Run t-test analysis
 StartTime = time.clock()
 import tTestAnalysis
-tTestAnalysis.tTestAnalysis(txtFilesList,tTest_Raw_outStream,tTest_Select_outStream, Collocations_CountedDictionary)
+tokensFreqs = tTestAnalysis.tTestAnalysis(txtFilesList,tTest_Raw_outStream,tTest_Select_outStream, Collocations_CountedDictionary)
 tTestTime = time.clock() - StartTime
 
 # Run PMI analysis
 StartTime = time.clock()
 import PmiAnalysis
-PmiAnalysis.PmiAnalysis(txtFilesList,PMI_Raw_outStream,PMI_Select_outStream)
+PmiAnalysis.PmiAnalysis(txtFilesList,PMI_Raw_outStream,PMI_Select_outStream,Collocations_CountedDictionary,tokensFreqs)
 PmiTime = time.clock() - StartTime
 
 
