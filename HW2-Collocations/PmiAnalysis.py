@@ -28,7 +28,7 @@ def PmiAnalysis(txtFilesList,PMI_Raw_outStream,PMI_Select_outStream,collocations
     Top100Collocations = sorted(PmiScoreDic.items(), key=operator.itemgetter(1),reverse=True)[0:100]
        
     # Output the top 100 PMI scores into PMI_raw.txt file
-    PMI_Raw_outStream.writelines((("%15d\t%20s %20s\t\t\t\t%f " + os.linesep) % (idx + 1, val[0].split()[1],val[0].split()[0], val[1] ) for idx, val in enumerate(Top100Collocations)))
+    PMI_Raw_outStream.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(Top100Collocations)))
     PMI_Raw_outStream.close()
     
     # List the collocations with exactly 20 appearances
@@ -38,7 +38,7 @@ def PmiAnalysis(txtFilesList,PMI_Raw_outStream,PMI_Select_outStream,collocations
             TwentyAppearances.append((Key,PmiScoreDic[Key]))  
 
     # Output the collocations with exactly 20 appearances with their PMI score into PMI_select.txt file
-    PMI_Select_outStream.writelines((("%15d\t%20s %20s\t\t\t\t%f " + os.linesep) % (idx + 1, val[0].split()[1],val[0].split()[0], val[1] ) for idx, val in enumerate(TwentyAppearances)))
+    PMI_Select_outStream.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(TwentyAppearances)))
     PMI_Select_outStream.close()
     
     return 'Done'
