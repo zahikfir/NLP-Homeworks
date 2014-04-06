@@ -55,6 +55,9 @@ def tTestAnalysis(txtFilesList,tTest_Raw_outStream,tTest_Select_outStream, collo
         if Value == 20:
             TwentyAppearances.append((Key,tScoreDic[Key]))
 
+    # Sort the collocations with exactly 20 appearances by the T-test score
+    TwentyAppearances.sort(key=operator.itemgetter(1),reverse= True)
+
     # Output the collocations with exactly 20 appearances with their tTest score into tTest_select.txt file
     tTest_Select_outStream.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(TwentyAppearances)))
     tTest_Select_outStream.close()
