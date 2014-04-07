@@ -3,8 +3,8 @@ import sys, os, codecs, re, time, math, operator
 
 # PMI analysis
 # input: txtFilesList - texts to analyze
-#        PMI_Raw_outStream / PMI_Select_outStream - output files
-def PmiAnalysis(PMI_Raw_outStream,PMI_Select_outStream,collocationsFreqs,tokensFreqs):
+#        PmiTop100 / Pmi20Appearances - output files
+def PmiAnalysis(PmiTop100,Pmi20Appearances,collocationsFreqs,tokensFreqs):
     StartTime = time.clock()
 
     # Get the number of tokens in all the corpus
@@ -29,8 +29,8 @@ def PmiAnalysis(PMI_Raw_outStream,PMI_Select_outStream,collocationsFreqs,tokensF
     Top100Collocations = sorted(PmiScoreDic.items(), key=operator.itemgetter(1),reverse=True)[0:100]
        
     # Output the top 100 PMI scores into PMI_raw.txt file
-    PMI_Raw_outStream.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(Top100Collocations)))
-    PMI_Raw_outStream.close()
+    PmiTop100.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(Top100Collocations)))
+    PmiTop100.close()
     
     # List the collocations with exactly 20 appearances
     TwentyAppearances = []
@@ -42,8 +42,8 @@ def PmiAnalysis(PMI_Raw_outStream,PMI_Select_outStream,collocationsFreqs,tokensF
     TwentyAppearances.sort(key=operator.itemgetter(1),reverse= True)
 
     # Output the collocations with exactly 20 appearances with their PMI score into PMI_select.txt file
-    PMI_Select_outStream.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(TwentyAppearances)))
-    PMI_Select_outStream.close()
+    Pmi20Appearances.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(TwentyAppearances)))
+    Pmi20Appearances.close()
     
     print("PmiAnalysis() (sec):\t\t" ,time.clock() - StartTime)
     return 'Done'

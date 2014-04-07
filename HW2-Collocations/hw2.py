@@ -51,12 +51,12 @@ if not os.path.exists(outputDir):
         os.makedirs(outputDir)
     
 # Create the output files  
-RF_Raw_outStream = codecs.open(os.path.join(outputDir, "RawFrequency_raw.txt"), "w", "utf-8")           # Raw Frequency top 100
-RF_Select_outStream = codecs.open(os.path.join(outputDir, "RawFrequency_select.txt"), "w", "utf-8")     # Raw exactly 20 appearances
-tTest_Raw_outStream = codecs.open(os.path.join(outputDir, "tTest_raw.txt"), "w", "utf-8")               # t-test top 100
-tTest_Select_outStream = codecs.open(os.path.join(outputDir, "tTest_select.txt"), "w", "utf-8")         # t-test exactly 20 appearances
-PMI_Raw_outStream = codecs.open(os.path.join(outputDir, "PMI_raw.txt"), "w", "utf-8")                   # PMI top 100
-PMI_Select_outStream = codecs.open(os.path.join(outputDir, "PMI_select.txt"), "w", "utf-8")             # PMI exactly 20 appearances
+RawFrequencyTop100 = codecs.open(os.path.join(outputDir, "RawFrequency_raw.txt"), "w", "utf-8")                 # Raw Frequency top 100
+RawFrequency20Appearances = codecs.open(os.path.join(outputDir, "RawFrequency_select.txt"), "w", "utf-8")       # Raw exactly 20 appearances
+tTestTop100 = codecs.open(os.path.join(outputDir, "tTest_raw.txt"), "w", "utf-8")                       # t-test top 100
+tTest20Appearances = codecs.open(os.path.join(outputDir, "tTest_select.txt"), "w", "utf-8")                 # t-test exactly 20 appearances
+PmiTop100 = codecs.open(os.path.join(outputDir, "PMI_raw.txt"), "w", "utf-8")                           # PMI top 100
+Pmi20Appearances = codecs.open(os.path.join(outputDir, "PMI_select.txt"), "w", "utf-8")                     # PMI exactly 20 appearances
 
 # Count tokens and collocations
 (collocationsFreqs,tokensFreqs) = CountTokensAndCollocations(txtFilesList)
@@ -65,15 +65,15 @@ PMI_Select_outStream = codecs.open(os.path.join(outputDir, "PMI_select.txt"), "w
 
 # Run Raw Frequency analysis
 import RawFrequencyAnalysis
-RawFrequencyAnalysis.RawFrequencyAnalysis(RF_Raw_outStream,RF_Select_outStream,collocationsFreqs,tokensFreqs)
+RawFrequencyAnalysis.RawFrequencyAnalysis(RawFrequencyTop100,RawFrequency20Appearances,collocationsFreqs,tokensFreqs)
 
 # Run t-test analysis
 import tTestAnalysis
-tokensFreqs = tTestAnalysis.tTestAnalysis(tTest_Raw_outStream,tTest_Select_outStream,collocationsFreqs,tokensFreqs)
+tokensFreqs = tTestAnalysis.tTestAnalysis(tTestTop100,tTest20Appearances,collocationsFreqs,tokensFreqs)
 
 # Run PMI analysis
 import PmiAnalysis
-PmiAnalysis.PmiAnalysis(PMI_Raw_outStream,PMI_Select_outStream,collocationsFreqs,tokensFreqs)
+PmiAnalysis.PmiAnalysis(PmiTop100,Pmi20Appearances,collocationsFreqs,tokensFreqs)
 
 
 sys.stdin.read(1)
