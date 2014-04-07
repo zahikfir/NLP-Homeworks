@@ -1,27 +1,12 @@
 
-import sys, os, codecs, math, operator
+import sys, os, codecs, math, operator, time
 
 # t-test analysis
 # input: txtFilesList - texts to analyze
 #        tTest_Raw_outStream / tTest_Select_outStream - output files
-def tTestAnalysis(txtFilesList,tTest_Raw_outStream,tTest_Select_outStream, collocationsFreqs):
-    
-    # class for creating a counted dictionary
-    from collections import Counter
-    tokensFreqs = Counter()
-
-    # Analysis each text  
-    for f in txtFilesList:
-        print("t-test analysis " + f + " :")
-
-        # open the input file
-        inputFileStream  = codecs.open(f,"r","utf-8")
-        inputFile = inputFileStream.read()
-        inputFile = inputFile.lower()       # when using english we want "Open minded" to be equal to "open minded"
-
-        # update the dictionary of tokens of the current text file to the global freq dictionary
-        tokensFreqs.update(Counter(inputFile.split()))
-    
+def tTestAnalysis(tTest_Raw_outStream,tTest_Select_outStream,collocationsFreqs,tokensFreqs):
+    StartTime = time.clock()
+  
     # get the number of tokens in all the corpus
     numOfTokens = sum(tokensFreqs.values())
 
@@ -62,5 +47,6 @@ def tTestAnalysis(txtFilesList,tTest_Raw_outStream,tTest_Select_outStream, collo
     tTest_Select_outStream.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(TwentyAppearances)))
     tTest_Select_outStream.close()
 
+    print("tTestAnalysis() (sec):\t\t" ,time.clock() - StartTime)
     return tokensFreqs
     

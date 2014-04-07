@@ -4,8 +4,9 @@ import sys, os, codecs, re, time, math, operator
 # PMI analysis
 # input: txtFilesList - texts to analyze
 #        PMI_Raw_outStream / PMI_Select_outStream - output files
-def PmiAnalysis(txtFilesList,PMI_Raw_outStream,PMI_Select_outStream,collocationsFreqs,tokensFreqs):
-     
+def PmiAnalysis(PMI_Raw_outStream,PMI_Select_outStream,collocationsFreqs,tokensFreqs):
+    StartTime = time.clock()
+
     # Get the number of tokens in all the corpus
     numOfTokens = sum(tokensFreqs.values())
      
@@ -44,4 +45,5 @@ def PmiAnalysis(txtFilesList,PMI_Raw_outStream,PMI_Select_outStream,collocations
     PMI_Select_outStream.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(TwentyAppearances)))
     PMI_Select_outStream.close()
     
+    print("PmiAnalysis() (sec):\t\t" ,time.clock() - StartTime)
     return 'Done'
