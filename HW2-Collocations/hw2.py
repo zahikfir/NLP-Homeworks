@@ -4,7 +4,7 @@
 # Zahi Kfir             200681476
 #********************** NLP **********************#
 
-import sys, os, codecs, re, time
+import sys, os, codecs, re, time, math, operator
 from collections import Counter
 
 # Input: list of input text streams 'txtFilesList'

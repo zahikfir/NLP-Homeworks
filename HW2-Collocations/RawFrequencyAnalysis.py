@@ -1,5 +1,5 @@
 
-import sys, os, codecs, re, time
+import sys, os, codecs, re, time, math, operator
 
 # Raw Frequency analysis
 # input: txtFilesList - texts to analyze

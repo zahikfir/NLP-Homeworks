@@ -1,5 +1,5 @@
 
-import sys, os, codecs, math, operator, time
+import sys, os, codecs, re, time, math, operator
 
 # t-test analysis
 # input: txtFilesList - texts to analyze
