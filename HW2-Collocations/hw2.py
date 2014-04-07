@@ -37,19 +37,19 @@ from collections import Counter
 # Run Raw Frequency analysis
 StartTime = time.clock()
 import RawFrequencyAnalysis
-Collocations_CountedDictionary = RawFrequencyAnalysis.RawFrequencyAnalysis(txtFilesList,RF_Raw_outStream,RF_Select_outStream)
+(collocationsFreqs,tokensFreqs) = RawFrequencyAnalysis.RawFrequencyAnalysis(txtFilesList,RF_Raw_outStream,RF_Select_outStream)
 RawFrequencyTime = time.clock() - StartTime
 
 # Run t-test analysis
 StartTime = time.clock()
 import tTestAnalysis
-tokensFreqs = tTestAnalysis.tTestAnalysis(txtFilesList,tTest_Raw_outStream,tTest_Select_outStream, Collocations_CountedDictionary)
+tokensFreqs = tTestAnalysis.tTestAnalysis(txtFilesList,tTest_Raw_outStream,tTest_Select_outStream, collocationsFreqs)
 tTestTime = time.clock() - StartTime
 
 # Run PMI analysis
 StartTime = time.clock()
 import PmiAnalysis
-PmiAnalysis.PmiAnalysis(txtFilesList,PMI_Raw_outStream,PMI_Select_outStream,Collocations_CountedDictionary,tokensFreqs)
+PmiAnalysis.PmiAnalysis(txtFilesList,PMI_Raw_outStream,PMI_Select_outStream,collocationsFreqs,tokensFreqs)
 PmiTime = time.clock() - StartTime
 
 
@@ -57,7 +57,6 @@ print("\nRaw Frequency analysis time (sec):\t"  ,RawFrequencyTime)
 print("t-test analysis time (sec):\t\t"         ,tTestTime)
 print("PMI analysis time (sec):\t\t"            ,PmiTime,'\n')
 
-
-
+sys.stdin.read(1)
 
 
