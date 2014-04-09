@@ -21,11 +21,9 @@ def tTestAnalysis(tTestTop100,tTest20Appearances,collocationsFreqs,tokensFreqs):
 
         # calculate the statistics
         meanOfDistributation = word1Prob * word2Prob
-        sampleVariance = (meanOfDistributation) * (1 - meanOfDistributation)
-        sampleMean = collocProb * (1 - collocProb)
 
         # set the tscore
-        if not sampleVariance == 0 : tScoreDic[collocation] = (math.fabs(sampleVariance - meanOfDistributation)) / (math.sqrt(sampleVariance / numOfTokens))
+        if not collocProb == 0 : tScoreDic[collocation] = (collocProb - meanOfDistributation) / (math.sqrt(collocProb / numOfTokens))
 
     # Get the top 100 collocations
     Top100Collocations = sorted(tScoreDic.items(), key=operator.itemgetter(1),reverse=True)[0:100]
