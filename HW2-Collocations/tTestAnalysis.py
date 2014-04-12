@@ -32,7 +32,7 @@ def tTestAnalysis(tTestTop100_OFile,tTest20Appearances_OFile,collocationsFreqs,t
     Top100Collocations = Top100Collocations[0:100]                                          # Get only top 100 collocations
 
     # Output the top 100 tTest scores into tTest_raw.txt file
-    tTestTop100_OFile.writelines((("%15d\t%30s\t%.10f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(Top100Collocations)))
+    tTestTop100_OFile.writelines((("%15d\t%30s\t%.2f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(Top100Collocations)))
     tTestTop100_OFile.close() 
     
     # List the collocations with exactly 20 appearances
@@ -44,7 +44,7 @@ def tTestAnalysis(tTestTop100_OFile,tTest20Appearances_OFile,collocationsFreqs,t
     TwentyAppearances.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
 
     # Output the collocations with exactly 20 appearances with their tTest score into tTest_select.txt file
-    tTest20Appearances_OFile.writelines((("%15d\t%30s\t%.10f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(TwentyAppearances)))
+    tTest20Appearances_OFile.writelines((("%15d\t%30s\t%.2f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(TwentyAppearances)))
     tTest20Appearances_OFile.close()
 
     print("tTestAnalysis() (sec):\t\t" ,time.clock() - StartTime)
