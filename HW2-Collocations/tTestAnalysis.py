@@ -3,8 +3,8 @@ import sys, os, codecs, re, time, math, operator
 
 # t-test analysis
 # input: txtFilesList - texts to analyze
-#        tTestTop100 / tTest20Appearances - output files
-def tTestAnalysis(tTestTop100,tTest20Appearances,collocationsFreqs,tokensFreqs):
+#        tTestTop100_OFile / tTest20Appearances_OFile - output files
+def tTestAnalysis(tTestTop100_OFile,tTest20Appearances_OFile,collocationsFreqs,tokensFreqs):
     StartTime = time.clock()
   
     # get the number of tokens in all the corpus
@@ -31,8 +31,8 @@ def tTestAnalysis(tTestTop100,tTest20Appearances,collocationsFreqs,tokensFreqs):
     Top100Collocations = sorted(tScoreDic.items(), key=operator.itemgetter(1),reverse=True)[0:100]
 
     # Output the top 100 tTest scores into tTest_raw.txt file
-    tTestTop100.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(Top100Collocations)))
-    tTestTop100.close() 
+    tTestTop100_OFile.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(Top100Collocations)))
+    tTestTop100_OFile.close() 
     
     # List the collocations with exactly 20 appearances
     TwentyAppearances = []
@@ -44,8 +44,8 @@ def tTestAnalysis(tTestTop100,tTest20Appearances,collocationsFreqs,tokensFreqs):
     TwentyAppearances.sort(key=operator.itemgetter(1),reverse= True)
 
     # Output the collocations with exactly 20 appearances with their tTest score into tTest_select.txt file
-    tTest20Appearances.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(TwentyAppearances)))
-    tTest20Appearances.close()
+    tTest20Appearances_OFile.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(TwentyAppearances)))
+    tTest20Appearances_OFile.close()
 
     print("tTestAnalysis() (sec):\t\t" ,time.clock() - StartTime)
     return tokensFreqs

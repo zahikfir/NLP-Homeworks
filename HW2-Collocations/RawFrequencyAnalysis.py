@@ -3,8 +3,8 @@ import sys, os, codecs, re, time, math, operator
 
 # Raw Frequency analysis
 # input: txtFilesList - texts to analyze
-#        RawFrequencyTop100 / RawFrequency20Appearances - output files
-def RawFrequencyAnalysis(RawFrequencyTop100,RawFrequency20Appearances,collocationsFreqs,tokensFreqs):
+#        RfTop100_OFile / Rf20Appearances_OFile - output files
+def RawFrequencyAnalysis(RfTop100_OFile,Rf20Appearances_OFile,collocationsFreqs,tokensFreqs):
     StartTime = time.clock()
    
     # get the number of tokens in all the corpus
@@ -12,8 +12,8 @@ def RawFrequencyAnalysis(RawFrequencyTop100,RawFrequency20Appearances,collocatio
 
     # Output the top 100 Raw Frequency scores into RawFrequency_raw.txt file
     Top100Collocations = collocationsFreqs.most_common(100)    # Get the top 100 collocations
-    RawFrequencyTop100.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1]*1000/NumOfTokens ) for idx, val in enumerate(Top100Collocations)))
-    RawFrequencyTop100.close() 
+    RfTop100_OFile.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1]*1000/NumOfTokens ) for idx, val in enumerate(Top100Collocations)))
+    RfTop100_OFile.close() 
     
     # List the collocations with exactly 20 appearances
     TwentyAppearances = []
@@ -22,8 +22,8 @@ def RawFrequencyAnalysis(RawFrequencyTop100,RawFrequency20Appearances,collocatio
             TwentyAppearances.append((Key,Value))
 
     # Output the collocations with exactly 20 appearances with their Raw Frequency score into RawFrequency_select.txt file
-    RawFrequency20Appearances.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1]*1000/NumOfTokens ) for idx, val in enumerate(TwentyAppearances)))
-    RawFrequency20Appearances.close()
+    Rf20Appearances_OFile.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1]*1000/NumOfTokens ) for idx, val in enumerate(TwentyAppearances)))
+    Rf20Appearances_OFile.close()
 
     # TODO
     # .most_common(100) is random when equally appear  (sort it Alpha-Beth)
