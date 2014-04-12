@@ -7,6 +7,9 @@
 import sys, os, codecs, re, time, math, operator
 from collections import Counter
 
+#ImprovementsMode = True;
+ImprovementsMode = False;
+
 # Input: list of input text streams 'txtFilesList'
 # Output: 2 counted dictionaries: collocations and tokens 
 def CountTokensAndCollocations(txtFilesList):
@@ -33,8 +36,11 @@ def CountTokensAndCollocations(txtFilesList):
                 collocationsFreqs.update( [ TokenList[Itr] + " " + TokenList[Itr+1] ])
                 
         inputFileStream.close()                         # close input file
+
     print("Run CountTokensAndCollocations() (sec):\t\t" ,time.clock() - StartTime)
     return (collocationsFreqs,tokensFreqs)
+
+StartTime = time.clock()
 
 # Get the command line argument
 if len(sys.argv) < 3: sys.exit("Please enter a data directory path and an output folder path")
@@ -50,32 +56,45 @@ txtFilesList = [ os.path.join(currentDir, f) for f in os.listdir(currentDir) if 
 if not os.path.exists(outputDir):
         os.makedirs(outputDir)
     
-# Create the output files  
-RawFrequencyTop100 = codecs.open(os.path.join(outputDir, "RawFrequency_raw.txt"), "w", "utf-8")                 # Raw Frequency top 100
-RawFrequency20Appearances = codecs.open(os.path.join(outputDir, "RawFrequency_select.txt"), "w", "utf-8")       # Raw exactly 20 appearances
-tTestTop100 = codecs.open(os.path.join(outputDir, "tTest_raw.txt"), "w", "utf-8")                       # t-test top 100
-tTest20Appearances = codecs.open(os.path.join(outputDir, "tTest_select.txt"), "w", "utf-8")                 # t-test exactly 20 appearances
-PmiTop100 = codecs.open(os.path.join(outputDir, "PMI_raw.txt"), "w", "utf-8")                           # PMI top 100
-Pmi20Appearances = codecs.open(os.path.join(outputDir, "PMI_select.txt"), "w", "utf-8")                     # PMI exactly 20 appearances
-
-# Count tokens and collocations
-(collocationsFreqs,tokensFreqs) = CountTokensAndCollocations(txtFilesList)
+# Create the output files (OFile) 
+RfTop100_OFile = codecs.open(os.path.join(outputDir, "RawFrequency_raw.txt"), "w", "utf-8")                 # Raw Frequency top 100
+Rf20Appearances_OFile = codecs.open(os.path.join(outputDir, "RawFrequency_select.txt"), "w", "utf-8")       # Raw exactly 20 appearances
+tTestTop100_OFile = codecs.open(os.path.join(outputDir, "tTest_raw.txt"), "w", "utf-8")                     # t-test top 100
+tTest20Appearances_OFile = codecs.open(os.path.join(outputDir, "tTest_select.txt"), "w", "utf-8")           # t-test exactly 20 appearances
+PmiTop100_OFile = codecs.open(os.path.join(outputDir, "PMI_raw.txt"), "w", "utf-8")                         # PMI top 100
+Pmi20Appearances_OFile = codecs.open(os.path.join(outputDir, "PMI_select.txt"), "w", "utf-8")               # PMI exactly 20 appearances
 
 
+if not(ImprovementsMode):
+    # Count tokens and collocations
+    (collocationsFreqs,tokensFreqs) = CountTokensAndCollocations(txtFilesList)
 
-# Run Raw Frequency analysis
-import RawFrequencyAnalysis
-RawFrequencyAnalysis.RawFrequencyAnalysis(RawFrequencyTop100,RawFrequency20Appearances,collocationsFreqs,tokensFreqs)
+    # Run Raw Frequency analysis
+    import RawFrequencyAnalysis
+    RawFrequencyAnalysis.RawFrequencyAnalysis(RfTop100_OFile,Rf20Appearances_OFile,collocationsFreqs,tokensFreqs)
 
-# Run t-test analysis
-import tTestAnalysis
-tokensFreqs = tTestAnalysis.tTestAnalysis(tTestTop100,tTest20Appearances,collocationsFreqs,tokensFreqs)
+    # Run t-test analysis
+    import tTestAnalysis
+    tTestAnalysis.tTestAnalysis(tTestTop100_OFile,tTest20Appearances_OFile,collocationsFreqs,tokensFreqs)
 
-# Run PMI analysis
-import PmiAnalysis
-PmiAnalysis.PmiAnalysis(PmiTop100,Pmi20Appearances,collocationsFreqs,tokensFreqs)
+    # Run PMI analysis
+    import PmiAnalysis
+    PmiAnalysis.PmiAnalysis(PmiTop100_OFile,Pmi20Appearances_OFile,collocationsFreqs,tokensFreqs)
+else:
+    import Improvements
+    (collocationsFreqs,tokensFreqs) = Improvements.CountTokensAndCollocations(txtFilesList)    
+    
+    import RawFrequencyAnalysis # Run Raw Frequency analysis
+    RawFrequencyAnalysis.RawFrequencyAnalysis(RfTop100_OFile,Rf20Appearances_OFile,collocationsFreqs,tokensFreqs)
+    
+    import tTestAnalysis # Run t-test analysis
+    tTestAnalysis.tTestAnalysis(tTestTop100_OFile,tTest20Appearances_OFile,collocationsFreqs,tokensFreqs)
+
+    import PmiAnalysis # Run PMI analysis
+    PmiAnalysis.PmiAnalysis(PmiTop100_OFile,Pmi20Appearances_OFile,collocationsFreqs,tokensFreqs)
 
 
+print("Total Time (sec):\t\t" ,time.clock() - StartTime)
 sys.stdin.read(1)
 
 

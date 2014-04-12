@@ -28,6 +28,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="hw2.py" />
+    <Compile Include="Improvements.py" />
     <Compile Include="PmiAnalysis.py" />
     <Compile Include="RawFrequencyAnalysis.py" />
     <Compile Include="tTestAnalysis.py" />

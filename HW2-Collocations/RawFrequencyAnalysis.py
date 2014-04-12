@@ -3,30 +3,32 @@ import sys, os, codecs, re, time, math, operator
 
 # Raw Frequency analysis
 # input: txtFilesList - texts to analyze
-#        RawFrequencyTop100 / RawFrequency20Appearances - output files
-def RawFrequencyAnalysis(RawFrequencyTop100,RawFrequency20Appearances,collocationsFreqs,tokensFreqs):
+#        RfTop100_OFile / Rf20Appearances_OFile - output files
+def RawFrequencyAnalysis(RfTop100_OFile,Rf20Appearances_OFile,collocationsFreqs,tokensFreqs):
     StartTime = time.clock()
-   
-    # get the number of tokens in all the corpus
-    NumOfTokens = sum(tokensFreqs.values())
 
+    NumOfTokens = sum(tokensFreqs.values())  # Total number of tokens in all the texts
+   
+    # List Top 100 Raw Frequency scores
+    Top100Collocations = sorted(collocationsFreqs.items(),key=operator.itemgetter(0))       # Alphabetically sort
+    Top100Collocations = sorted(Top100Collocations, key=lambda tup: tup[1],reverse=True)    # Sort by count
+    Top100Collocations = Top100Collocations[0:100]                                          # Get only top 100 collocations
+    
     # Output the top 100 Raw Frequency scores into RawFrequency_raw.txt file
-    Top100Collocations = collocationsFreqs.most_common(100)    # Get the top 100 collocations
-    RawFrequencyTop100.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1]*1000/NumOfTokens ) for idx, val in enumerate(Top100Collocations)))
-    RawFrequencyTop100.close() 
+    RfTop100_OFile.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1]*1000/NumOfTokens ) for idx, val in enumerate(Top100Collocations)))
+    RfTop100_OFile.close() 
     
     # List the collocations with exactly 20 appearances
     TwentyAppearances = []
-    for Key, Value in collocationsFreqs.items():
+    for (Key,Value) in collocationsFreqs.items():
         if Value == 20:
             TwentyAppearances.append((Key,Value))
-
+    TwentyAppearances.sort(key=operator.itemgetter(0))                  # Alphabetically sort
+    TwentyAppearances.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
+    
     # Output the collocations with exactly 20 appearances with their Raw Frequency score into RawFrequency_select.txt file
-    RawFrequency20Appearances.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1]*1000/NumOfTokens ) for idx, val in enumerate(TwentyAppearances)))
-    RawFrequency20Appearances.close()
-
-    # TODO
-    # .most_common(100) is random when equally appear  (sort it Alpha-Beth)
+    Rf20Appearances_OFile.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1]*1000/NumOfTokens ) for idx, val in enumerate(TwentyAppearances)))
+    Rf20Appearances_OFile.close()
     
     print("RawFrequencyAnalysis() (sec):\t\t" ,time.clock() - StartTime)
-    return (collocationsFreqs,tokensFreqs)
+    return (time.clock() - StartTime)
