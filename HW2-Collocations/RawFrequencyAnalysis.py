@@ -9,20 +9,23 @@ def RawFrequencyAnalysis(RfTop100_OFile,Rf20Appearances_OFile,collocationsFreqs,
 
     NumOfTokens = sum(tokensFreqs.values())  # Total number of tokens in all the texts
    
-    collocationsFreqs = sorted(collocationsFreqs.items(),key=operator.itemgetter(0))    # Alphabetically sort
-    collocationsFreqs = sorted(collocationsFreqs, key=lambda tup: tup[1],reverse=True)  # Sort by count
+    # List Top 100 Raw Frequency scores
+    Top100Collocations = sorted(collocationsFreqs.items(),key=operator.itemgetter(0))       # Alphabetically sort
+    Top100Collocations = sorted(Top100Collocations, key=lambda tup: tup[1],reverse=True)    # Sort by count
+    Top100Collocations = Top100Collocations[0:100]                                          # Get only top 100 collocations
     
     # Output the top 100 Raw Frequency scores into RawFrequency_raw.txt file
-    Top100Collocations = collocationsFreqs[0:100]    # Get the top 100 collocations
     RfTop100_OFile.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1]*1000/NumOfTokens ) for idx, val in enumerate(Top100Collocations)))
     RfTop100_OFile.close() 
     
     # List the collocations with exactly 20 appearances
     TwentyAppearances = []
-    for (Key,Value) in collocationsFreqs:
+    for (Key,Value) in collocationsFreqs.items():
         if Value == 20:
             TwentyAppearances.append((Key,Value))
-
+    TwentyAppearances.sort(key=operator.itemgetter(0))                  # Alphabetically sort
+    TwentyAppearances.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
+    
     # Output the collocations with exactly 20 appearances with their Raw Frequency score into RawFrequency_select.txt file
     Rf20Appearances_OFile.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1]*1000/NumOfTokens ) for idx, val in enumerate(TwentyAppearances)))
     Rf20Appearances_OFile.close()
