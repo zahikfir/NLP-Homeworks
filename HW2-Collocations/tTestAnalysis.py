@@ -48,5 +48,5 @@ def tTestAnalysis(tTestTop100_OFile,tTest20Appearances_OFile,collocationsFreqs,t
     tTest20Appearances_OFile.close()
 
     print("tTestAnalysis() (sec):\t\t" ,time.clock() - StartTime)
-    return tokensFreqs
+    return time.clock() - StartTime
     
