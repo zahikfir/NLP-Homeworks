@@ -26,7 +26,7 @@ def PmiAnalysis(PmiTop100_OFile,Pmi20Appearances_OFile,collocationsFreqs,tokensF
     Top100Collocations = Top100Collocations[0:100]                                          # Get only top 100 collocations
     
     # Output the top 100 PMI scores into PMI_raw.txt file
-    PmiTop100_OFile.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(Top100Collocations)))
+    PmiTop100_OFile.writelines((("%15d\t%30s\t%.10f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(Top100Collocations)))
     PmiTop100_OFile.close()
     
     # List the collocations with exactly 20 appearances
@@ -38,7 +38,7 @@ def PmiAnalysis(PmiTop100_OFile,Pmi20Appearances_OFile,collocationsFreqs,tokensF
     TwentyAppearances.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
 
     # Output the collocations with exactly 20 appearances with their PMI score into PMI_select.txt file
-    Pmi20Appearances_OFile.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(TwentyAppearances)))
+    Pmi20Appearances_OFile.writelines((("%15d\t%30s\t%.10f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(TwentyAppearances)))
     Pmi20Appearances_OFile.close()
     
     print("PmiAnalysis() (sec):\t\t" ,time.clock() - StartTime)
