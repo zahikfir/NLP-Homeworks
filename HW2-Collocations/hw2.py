@@ -33,8 +33,11 @@ def CountTokensAndCollocations(txtFilesList):
                 collocationsFreqs.update( [ TokenList[Itr] + " " + TokenList[Itr+1] ])
                 
         inputFileStream.close()                         # close input file
+
     print("Run CountTokensAndCollocations() (sec):\t\t" ,time.clock() - StartTime)
     return (collocationsFreqs,tokensFreqs)
+
+StartTime = time.clock()
 
 # Get the command line argument
 if len(sys.argv) < 3: sys.exit("Please enter a data directory path and an output folder path")
@@ -69,13 +72,13 @@ RawFrequencyAnalysis.RawFrequencyAnalysis(RfTop100_OFile,Rf20Appearances_OFile,c
 
 # Run t-test analysis
 import tTestAnalysis
-tokensFreqs = tTestAnalysis.tTestAnalysis(tTestTop100_OFile,tTest20Appearances_OFile,collocationsFreqs,tokensFreqs)
+tTestAnalysis.tTestAnalysis(tTestTop100_OFile,tTest20Appearances_OFile,collocationsFreqs,tokensFreqs)
 
 # Run PMI analysis
 import PmiAnalysis
 PmiAnalysis.PmiAnalysis(PmiTop100_OFile,Pmi20Appearances_OFile,collocationsFreqs,tokensFreqs)
 
-
+print("Total Time (sec):\t\t" ,time.clock() - StartTime)
 sys.stdin.read(1)
 
 
