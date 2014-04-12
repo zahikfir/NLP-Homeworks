@@ -15,7 +15,7 @@ def RawFrequencyAnalysis(RfTop100_OFile,Rf20Appearances_OFile,collocationsFreqs,
     Top100Collocations = Top100Collocations[0:100]                                          # Get only top 100 collocations
     
     # Output the top 100 Raw Frequency scores into RawFrequency_raw.txt file
-    RfTop100_OFile.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1]*1000/NumOfTokens ) for idx, val in enumerate(Top100Collocations)))
+    RfTop100_OFile.writelines((("%15d\t%30s\t%.2f " + os.linesep) % (idx + 1, val[0], val[1]*1000/NumOfTokens ) for idx, val in enumerate(Top100Collocations)))
     RfTop100_OFile.close() 
     
     # List the collocations with exactly 20 appearances
@@ -27,7 +27,7 @@ def RawFrequencyAnalysis(RfTop100_OFile,Rf20Appearances_OFile,collocationsFreqs,
     TwentyAppearances.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
     
     # Output the collocations with exactly 20 appearances with their Raw Frequency score into RawFrequency_select.txt file
-    Rf20Appearances_OFile.writelines((("%15d\t%30s\t%f " + os.linesep) % (idx + 1, val[0], val[1]*1000/NumOfTokens ) for idx, val in enumerate(TwentyAppearances)))
+    Rf20Appearances_OFile.writelines((("%15d\t%30s\t%.2f " + os.linesep) % (idx + 1, val[0], val[1]*1000/NumOfTokens ) for idx, val in enumerate(TwentyAppearances)))
     Rf20Appearances_OFile.close()
     
     print("RawFrequencyAnalysis() (sec):\t\t" ,time.clock() - StartTime)
