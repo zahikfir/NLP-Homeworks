@@ -29,7 +29,7 @@ def CountTokensAndCollocations(txtFilesList):
         tokensFreqs.update(Counter(inputFile.split()))  # Count all tokens
 
         # Count all collocation
-        f_Sentences = inputFile.split(os.linesep)       # Split the text to sentences, (No collocation crosses two sentences)   
+        f_Sentences = inputFile.split('\n')       # Split the text to sentences, (No collocation crosses two sentences)   
         for Sentence in f_Sentences:                    # Analyze each sentence separately 
             TokenList = Sentence.split()                # Split the sentence into tokens
             for Itr in range(0,len(TokenList)-1):       # Add all the sequential collocations to the dictionary 
