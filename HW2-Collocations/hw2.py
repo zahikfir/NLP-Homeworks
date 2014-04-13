@@ -17,7 +17,6 @@ ImprovementsMode = False;
 def CountTokensAndCollocations(txtFilesList):
     StartTime = time.clock()
 
-    from collections import Counter         # Class for creating a counted dictionary
     tokensFreqs = Counter()                 # For token counting 
     collocationsFreqs = Counter()           # For collocation counting
     
@@ -39,7 +38,7 @@ def CountTokensAndCollocations(txtFilesList):
                 
         inputFileStream.close()                         # close input file
 
-    print("Run CountTokensAndCollocations() (sec):\t\t" ,time.clock() - StartTime)
+    print("CountTokensAndCollocations() (sec):\t" ,time.clock() - StartTime)
     return (collocationsFreqs,tokensFreqs)
 
 
@@ -120,7 +119,7 @@ def tTestAnalysis(tTestTop100_OFile,tTest20Appearances_OFile,collocationsFreqs,t
     tTest20Appearances_OFile.writelines((("%15d\t%30s\t%.2f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(TwentyAppearances)))
     tTest20Appearances_OFile.close()
 
-    print("tTestAnalysis() (sec):\t\t" ,time.clock() - StartTime)
+    print("tTestAnalysis() (sec):\t\t\t" ,time.clock() - StartTime)
     return time.clock() - StartTime
    
 
@@ -164,7 +163,7 @@ def PmiAnalysis(PmiTop100_OFile,Pmi20Appearances_OFile,collocationsFreqs,tokensF
     Pmi20Appearances_OFile.writelines((("%15d\t%30s\t%.2f " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(TwentyAppearances)))
     Pmi20Appearances_OFile.close()
     
-    print("PmiAnalysis() (sec):\t\t" ,time.clock() - StartTime)
+    print("PmiAnalysis() (sec):\t\t\t" ,time.clock() - StartTime)
     return time.clock() - StartTime
 
 
@@ -187,8 +186,11 @@ def ContainSign(InputString):
     return False
 
 
-# Input: list of input text streams 'txtFilesList'
-# Output: 2 counted dictionaries: collocations and tokens 
+# As CountTokensAndCollocations() + Filtering some UN-interesting collocations 
+# Filtering: 
+#   1. collocations that one or more token contains a sign.         e.g. Dog(
+#   2. collocations that one or more token contains a number.       e.g. since 1989
+#   3. collocations that one or more token length is less then 2.   e.g. since - 
 def CountTokensAndCollocations_Improved(txtFilesList):
     StartTime = time.clock()
 
@@ -210,14 +212,17 @@ def CountTokensAndCollocations_Improved(txtFilesList):
         for Sentence in f_Sentences:                    # Analyze each sentence separately 
             TokenList = Sentence.split()                # Split the sentence into tokens
             for Itr in range(0,len(TokenList)-1):       # Add all the sequential collocations to the dictionary 
+                # Filter tokens that contains a sign
                 if not( ContainSign(TokenList[Itr]) or ContainSign(TokenList[Itr+1]) ):
+                    # Filter tokens that contains a digit
                     if not( ContainsDigit(TokenList[Itr]) or ContainsDigit(TokenList[Itr+1]) ):
+                        # Filter tokens with length < 2
                         if not ( (len(TokenList[Itr]) < 2) or (len(TokenList[Itr+1]) < 2) ):
                             collocationsFreqs.update( [ TokenList[Itr] + " " + TokenList[Itr+1] ])
                 
         inputFileStream.close()                         # close input file
 
-    print("Run CountTokensAndCollocations() (sec):\t\t" ,time.clock() - StartTime)
+    print("CountTokensAndCollocations_Improved() (sec):\t\t" ,time.clock() - StartTime)
     return (collocationsFreqs,tokensFreqs)
 
 StartTime = time.clock()
@@ -248,11 +253,11 @@ Pmi20Appearances_OFile = codecs.open(os.path.join(outputDir, "PMI_select.txt"), 
 if not(ImprovementsMode):
     (collocationsFreqs,tokensFreqs) = CountTokensAndCollocations(txtFilesList)
 else:
-    (collocationsFreqs,tokensFreqs) = Improvements.CountTokensAndCollocations(txtFilesList)
+    (collocationsFreqs,tokensFreqs) = CountTokensAndCollocations_Improved(txtFilesList)
  
 # Print the Raw-frequency/T-Test/PMI score into the output files
 RawFrequencyAnalysis(RfTop100_OFile,Rf20Appearances_OFile,collocationsFreqs,tokensFreqs)    # Raw Frequency 
 tTestAnalysis(tTestTop100_OFile,tTest20Appearances_OFile,collocationsFreqs,tokensFreqs)     # t-test 
 PmiAnalysis(PmiTop100_OFile,Pmi20Appearances_OFile,collocationsFreqs,tokensFreqs)           # PMI 
 
-print("Total Time (sec):\t\t" ,time.clock() - StartTime)
+print("Total Time (sec):\t\t\t" ,time.clock() - StartTime)
