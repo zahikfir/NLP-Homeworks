@@ -225,6 +225,8 @@ def CountTokensAndCollocations_Improved(txtFilesList):
     print("CountTokensAndCollocations_Improved() (sec):\t\t" ,time.clock() - StartTime)
     return (collocationsFreqs,tokensFreqs)
 
+
+
 StartTime = time.clock()
 
 # Get the command line argument
@@ -258,6 +260,16 @@ else:
 # Print the Raw-frequency/T-Test/PMI score into the output files
 RawFrequencyAnalysis(RfTop100_OFile,Rf20Appearances_OFile,collocationsFreqs,tokensFreqs)    # Raw Frequency 
 tTestAnalysis(tTestTop100_OFile,tTest20Appearances_OFile,collocationsFreqs,tokensFreqs)     # t-test 
-PmiAnalysis(PmiTop100_OFile,Pmi20Appearances_OFile,collocationsFreqs,tokensFreqs)           # PMI 
+if not(ImprovementsMode):
+    PmiAnalysis(PmiTop100_OFile,Pmi20Appearances_OFile,collocationsFreqs,tokensFreqs)       # PMI 
+else:
+    # Remove the collocations with less than 4 appearances
+    ToRemove = []
+    for (Key,Value) in collocationsFreqs.items():
+        if Value < 4:
+            ToRemove.append(Key)
+    for Key in ToRemove:
+        collocationsFreqs.pop(Key)
+    PmiAnalysis(PmiTop100_OFile,Pmi20Appearances_OFile,collocationsFreqs,tokensFreqs)       # PMI   
 
 print("Total Time (sec):\t\t\t" ,time.clock() - StartTime)
