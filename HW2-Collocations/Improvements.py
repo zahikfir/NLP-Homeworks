@@ -20,7 +20,7 @@ def ContainSign(InputString):
 
 # Input: list of input text streams 'txtFilesList'
 # Output: 2 counted dictionaries: collocations and tokens 
-def CountTokensAndCollocations(txtFilesList):
+def CountTokensAndCollocations_Improved(txtFilesList):
     StartTime = time.clock()
 
     UninterestingTokens = ["." , "!" , "?" , "," , ":" , ";" , '<' , '>' , '@' , '#', '$' , '%' , '^' , '&' , '*' , '(' , ')' , '+', '=', '[' , ']' , '{' , '}' , "/" , "\\" , '_' , '~',"-","'" ,'"' ]
