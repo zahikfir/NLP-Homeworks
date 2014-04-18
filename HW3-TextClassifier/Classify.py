@@ -7,8 +7,6 @@
 import sys, os, time, codecs
 from collections import Counter
 
-StartTime = time.clock()
-
 # Return the execution mod and the appropriate command arguments
 def GetCommandLineArguments():
     try:
@@ -60,12 +58,65 @@ def GetDictionary(inputFolderPath):
         dic.update(Counter(codecs.open(txtFile,"r","utf-8").read().split()))
 
     # return the entire dictionary
+    return dic.keys()
+
+# create a feature vector dictionary from array
+def ArrayToZeroedDictionary(arr, dic = {}):
+    for item in arr:
+        dic[item] = 0
     return dic
+
+# add the reviews within the specified path to the db with the given label using only the featured words
+def AddVectorsToTrainingVectors(db, inputFolderPath, featuresArr, label):
+    
+    # Get all the txt file paths from the positive folder
+    txtFilesList = [ os.path.join(inputFolderPath, f) for f in os.listdir(inputFolderPath) if (os.path.isfile(os.path.join(inputFolderPath, f)) & str(f).endswith(".txt"))]
+    
+    # update the dictionary with each review
+    dic = {}
+    for txtFile in txtFilesList:
+        
+        # initialize a feature vector for this file
+        featuresDic = ArrayToZeroedDictionary(featuresArr, dic)
+
+        # create a list of tokens
+        tokens = codecs.open(txtFile,"r","utf-8").read().split()
+        
+        # for each token, if it in the feature list enable his flag
+        for token in tokens:
+            if token in featuresArr:
+                featuresDic[token] = 1
+
+        # add the tuple (featureVec , label) to the global db
+        trainExample = (featuresDic.values(), label)
+        db.append(trainExample)
+
+    # return the updated db
+    return db
+
+# create the training vector DB
+def CreateTrainingVectorDB(inputFolderPath, featuresArr):
+    
+    #initialize an empty DB
+    db = []
+
+    db = AddVectorsToTrainingVectors(db, os.path.join(inputFolderPath, "pos"), featuresArr,  1)
+    db = AddVectorsToTrainingVectors(db, os.path.join(inputFolderPath, "neg"), featuresArr, -1)
+
+    return db
+
+#********************** NLP **********************#
+# Main Program 
+
+StartTime = time.clock()
 
 # parse the command line arguments
 executionMode,InputFilesFolder,TestsFilesFolder = GetCommandLineArguments()
 
 # create the feature vector - For now from all the words in the text
-featureVector = GetDictionary(InputFilesFolder)
+featuresArr = GetDictionary(InputFilesFolder)
+
+# create the train DB vectors
+TrainingVectorDb = CreateTrainingVectorDB(InputFilesFolder, featuresArr)
 
 print("Total Time (sec):\t\t\t" ,time.clock() - StartTime)
