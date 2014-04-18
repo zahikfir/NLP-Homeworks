@@ -4,7 +4,9 @@
 # Zahi Kfir             200681476
 #********************** NLP **********************#
 
-import sys, os, time
+import sys, os, time, codecs
+from collections import Counter
+
 StartTime = time.clock()
 
 # Return the execution mod and the appropriate command arguments
@@ -34,7 +36,36 @@ def GetCommandLineArguments():
 
     return executionMode,InputFilesFolder,TestsFilesFolder
     
+# Temporarly Function - Create a feature vector from all the words in the corpus
+def GetDictionary(inputFolderPath):
+    
+    dic = Counter()
+
+    # Get all the txt file paths from the positive folder
+    print("Creating dictionary (feature vector) from the positive reviews input folder")
+    posFolder = os.path.join(inputFolderPath, "pos")
+    txtFilesList = [ os.path.join(posFolder, f) for f in os.listdir(posFolder) if (os.path.isfile(os.path.join(posFolder, f)) & str(f).endswith(".txt"))]
+    
+    # update the dictionary with each review
+    for txtFile in txtFilesList:
+        dic.update(Counter(codecs.open(txtFile,"r","utf-8").read().split()))
+
+    # Get all the txt file paths from the positive folder
+    print("Updating the dictionary (feature vector) from the negative reviews input folder")
+    posFolder = os.path.join(inputFolderPath, "neg")
+    txtFilesList = [ os.path.join(posFolder, f) for f in os.listdir(posFolder) if (os.path.isfile(os.path.join(posFolder, f)) & str(f).endswith(".txt"))]
+    
+    # update the dictionary with each review
+    for txtFile in txtFilesList:
+        dic.update(Counter(codecs.open(txtFile,"r","utf-8").read().split()))
+
+    # return the entire dictionary
+    return dic
+
 # parse the command line arguments
 executionMode,InputFilesFolder,TestsFilesFolder = GetCommandLineArguments()
+
+# create the feature vector - For now from all the words in the text
+featureVector = GetDictionary(InputFilesFolder)
 
 print("Total Time (sec):\t\t\t" ,time.clock() - StartTime)
