@@ -13,7 +13,7 @@
     <Name>HW3-TextClassifier</Name>
     <RootNamespace>HW3-TextClassifier</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>-e -training ../Data/HW3/Input</CommandLineArguments>
+    <CommandLineArguments>-c -training ../Data/HW3/Input -test ../Data/HW3/Test</CommandLineArguments>
     <InterpreterPath />
     <InterpreterArguments />
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>

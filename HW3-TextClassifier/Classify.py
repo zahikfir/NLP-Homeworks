@@ -66,29 +66,39 @@ def ArrayToZeroedDictionary(arr, dic = {}):
         dic[item] = 0
     return dic
 
+# create a representation vector to a review
+def CreateRepresentationVector(reviewPath, featuresArr):
+    
+    # initialize a feature vector for this file
+    featuresDic = ArrayToZeroedDictionary(featuresArr)
+
+    # create a list of tokens
+    tokens = codecs.open(reviewPath, "r", "utf-8").read().split()
+        
+    # for each token, if it in the feature list enable his flag
+    for token in tokens:
+        if token in featuresArr:
+            featuresDic[token] = 1
+
+    # return only the vector
+    representationVector = featuresDic.values()
+
+    # free the allocated memory of the dictionary
+    del(featuresDic)
+
+    return representationVector
+
 # add the reviews within the specified path to the db with the given label using only the featured words
 def AddVectorsToTrainingVectors(db, inputFolderPath, featuresArr, label):
     
-    # Get all the txt file paths from the positive folder
+    # Get all the txt file paths from the input folder
     txtFilesList = [ os.path.join(inputFolderPath, f) for f in os.listdir(inputFolderPath) if (os.path.isfile(os.path.join(inputFolderPath, f)) & str(f).endswith(".txt"))]
     
-    # update the dictionary with each review
-    dic = {}
+    # update the dictionary with each review vector
     for txtFile in txtFilesList:
         
-        # initialize a feature vector for this file
-        featuresDic = ArrayToZeroedDictionary(featuresArr, dic)
-
-        # create a list of tokens
-        tokens = codecs.open(txtFile,"r","utf-8").read().split()
-        
-        # for each token, if it in the feature list enable his flag
-        for token in tokens:
-            if token in featuresArr:
-                featuresDic[token] = 1
-
-        # add the tuple (featureVec , label) to the global db
-        trainExample = (featuresDic.values(), label)
+        # add the tuple (representationVector , label) to the global db
+        trainExample = (CreateRepresentationVector(txtFile, featuresArr) , label)
         db.append(trainExample)
 
     # return the updated db
@@ -100,10 +110,66 @@ def CreateTrainingVectorDB(inputFolderPath, featuresArr):
     #initialize an empty DB
     db = []
 
+    print("Add Positive reviews to the training set")
     db = AddVectorsToTrainingVectors(db, os.path.join(inputFolderPath, "pos"), featuresArr,  1)
+    print("Add Negative reviews to the training set")
     db = AddVectorsToTrainingVectors(db, os.path.join(inputFolderPath, "neg"), featuresArr, -1)
 
     return db
+
+# classify the given vector using naive Bayes algorithm
+def NaiveBayesClassifyVector(vec, trainingVectorsDb):
+    # N is the size of the train DB
+    N = len(trainingVectorsDb)
+
+    # initialize the classes
+    classes = [1, -1]
+
+    # check what is the most likely class for the vector
+    classesProb = [0, 0]
+
+    # for each class calculate it's probability
+    for classIdx in range(len(classes)):
+            
+        # counter for all the occurrances of the class in the training DB
+        sum_c = 0
+
+        # counters array for all the occurrances of a feature with the specified class in the training DB
+        sum_features = [0] * len(vec)
+
+        # run over all the vectors in the training Db and count the occurrances
+        for trainingVector in TrainingVectorDb:
+            if trainingVector[1] == classes[classIdx]:
+                sum_c = sum_c + 1
+                for featureIdx in range(len(vec)):
+                    if trainingVector[0][featureIdx] == vec[featureIdx]:
+                        sum_features[featureIdx] = sum_features[featureIdx] + 1
+
+        # calculate the probabilities
+        classesProb[classIdx] = sum_c / N
+        for featureIdx in range(len(vec)):
+            classesProb[classIdx] = classesProb[classIdx] * (sum_features[featureIdx] / sum_c)
+
+        # return the chosen class
+        return classesProb.index(max(classesProb))
+
+# classify the reviews located in the test folder path using NaiveBayes algorithm 
+def NaiveBayesClassify(testFolderPath, trainingVectorsDb, featuresArr):
+    
+     # Get all the txt file paths from the test folder
+    txtFilesList = [ os.path.join(testFolderPath, f) for f in os.listdir(testFolderPath) if (os.path.isfile(os.path.join(testFolderPath, f)) & str(f).endswith(".txt"))]
+    
+    # try to classify each txtFile
+    for txtFile in txtFilesList:
+        
+        # create the vector representing the current review 
+        vec = CreateRepresentationVector(txtFile, featuresArr)
+
+        # classify the vector
+        classification = NaiveBayesClassifyVector(vec, trainingVectorsDb)
+
+        # take the class wich maximize the probability and print it 
+        print(txtFile, classification)
 
 #********************** NLP **********************#
 # Main Program 
@@ -118,5 +184,8 @@ featuresArr = GetDictionary(InputFilesFolder)
 
 # create the train DB vectors
 TrainingVectorDb = CreateTrainingVectorDB(InputFilesFolder, featuresArr)
+
+# Classify the new reviews using NaiveBayes classifier
+NaiveBayesClassify(TestsFilesFolder, TrainingVectorDb, featuresArr)
 
 print("Total Time (sec):\t\t\t" ,time.clock() - StartTime)
