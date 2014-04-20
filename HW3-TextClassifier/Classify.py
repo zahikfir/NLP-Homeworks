@@ -117,6 +117,12 @@ def CreateTrainingVectorDB(inputFolderPath, featuresArr):
 
     return db
 
+# run ten fold cross validation on the training db to evaluate it's results
+# prints avarage of: recall, percision, accuracy, f-score
+def CrossValidateDB(vectorDb, featruresArr):
+    #TODO
+    return None
+
 # classify the given vector using naive Bayes algorithm
 def NaiveBayesClassifyVector(vec, trainingVectorsDb):
     # N is the size of the train DB
@@ -186,7 +192,13 @@ featuresArr = GetDictionary(InputFilesFolder)
 # create the train DB vectors
 TrainingVectorDb = CreateTrainingVectorDB(InputFilesFolder, featuresArr)
 
-# Classify the new reviews using NaiveBayes classifier
-NaiveBayesClassify(TestsFilesFolder, TrainingVectorDb, featuresArr)
+# if we are in evaluation mode
+if executionMode == "-e":
+    CrossValidateDB(TrainingVectorDb, featuresArr)
+
+# if we are in classify mode
+if executionMode == "-c":
+    # Classify the new reviews using NaiveBayes classifier
+    NaiveBayesClassify(TestsFilesFolder, TrainingVectorDb, featuresArr)
 
 print("Total Time (sec):\t\t\t" ,time.clock() - StartTime)
