@@ -120,8 +120,56 @@ def CreateTrainingVectorDB(inputFolderPath, featuresArr):
 # run ten fold cross validation on the training db to evaluate it's results
 # prints avarage of: recall, percision, accuracy, f-score
 def CrossValidateDB(vectorDb, featruresArr):
-    #TODO
-    return None
+    
+    # get the size of the db
+    N = len(vectorDb)
+    posStart = 0 
+    negStart = math.ceil(N/2) 
+    
+    # number of folds
+    numFolds = 10
+    precision = recall = accurracy = fScore = []
+    
+    # run ten folds
+    for i in range(numFolds):
+
+        print("Evaluating fold #", i)
+
+        # initialize the training and test db
+        train = vectorDb[posStart:math.ceil(posStart + i*(N/(numFolds*2)))]
+        test  = vectorDb[math.ceil(posStart + i*(N/(numFolds*2))): math.ceil(posStart + (i+1)*(N/(numFolds*2)))]
+        train = vectorDb[math.ceil(posStart + (i+1)*(N/(numFolds*2))): math.ceil(N/2)]
+
+        train.append(vectorDb[negStart:math.ceil(negStart + i*(N/(numFolds*2)))])
+        test.append(vectorDb[math.ceil(negStart + i*(N/(numFolds*2))): math.ceil(negStart + (i+1)*(N/(numFolds*2)))])
+        train.append(vectorDb[math.ceil(negStart + (i+1)*(N/(numFolds*2))):])
+
+        TP = FP = TN = FN = 0
+        
+        # run classification on each vector in the test db
+        for testVec in test:
+            
+            # classify the vector
+            classification = NaiveBayesClassifyVector(testVec[0], train)
+            
+            # update statistics
+            if classification == testVec[1]: # true result
+                if classification == 1: TP = TP + 1 # positive result
+                else: TN = TN + 1 # negative result
+            else: # false result
+                if classification == -1: FN = FN + 1 # negative result
+                else: FP = FP + 1 # positive result
+
+        precision.append((TP / (TP + FP)))
+        recall.append((TP / (TP + FN)))
+        accurracy.append(((TP + TN) / (TP + TN + FP + FN)))
+        fScore.append(((2 * precision[i] * recall[i]) / (precision[i] + recall[i]))) # blanced fScore using a=1/2
+
+    # print the avarage over all folds
+    print("avg precision : ", float(sum(precision))/len(precision))
+    print("avg recall : ", float(sum(recall))/len(recall))
+    print("avg accurracy : ", float(sum(accurracy))/len(accurracy))
+    print("avg fScore : ", float(sum(fScore))/len(fScore))
 
 # classify the given vector using naive Bayes algorithm
 def NaiveBayesClassifyVector(vec, trainingVectorsDb):
