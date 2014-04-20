@@ -81,7 +81,7 @@ def CreateRepresentationVector(reviewPath, featuresArr):
             featuresDic[token] = 1
 
     # return only the vector
-    representationVector = featuresDic.values()
+    representationVector = list(featuresDic.values())
 
     # free the allocated memory of the dictionary
     del(featuresDic)
@@ -151,7 +151,7 @@ def NaiveBayesClassifyVector(vec, trainingVectorsDb):
             classesProb[classIdx] = classesProb[classIdx] * (sum_features[featureIdx] / sum_c)
 
         # return the chosen class
-        return classesProb.index(max(classesProb))
+        return classes[classesProb.index(max(classesProb))]
 
 # classify the reviews located in the test folder path using NaiveBayes algorithm 
 def NaiveBayesClassify(testFolderPath, trainingVectorsDb, featuresArr):
