@@ -4,7 +4,7 @@
 # Zahi Kfir             200681476
 #********************** NLP **********************#
 
-import sys, os, time, codecs
+import sys, os, time, codecs, math
 from collections import Counter
 
 # Return the execution mod and the appropriate command arguments
@@ -145,13 +145,14 @@ def NaiveBayesClassifyVector(vec, trainingVectorsDb):
                     if trainingVector[0][featureIdx] == vec[featureIdx]:
                         sum_features[featureIdx] = sum_features[featureIdx] + 1
 
-        # calculate the probabilities
-        classesProb[classIdx] = sum_c / N
+        # calculate the probabilities using add 1 laplace smoothing (adding 1 to the numerator and the number of classes to the denominator)
+        classesProb[classIdx] = math.log(sum_c / N)
         for featureIdx in range(len(vec)):
-            classesProb[classIdx] = classesProb[classIdx] * (sum_features[featureIdx] / sum_c)
+            classesProb[classIdx] = classesProb[classIdx] + math.log((sum_features[featureIdx] + 1) / (sum_c + len(classes)))
+        classesProb[classIdx] = math.exp(classesProb[classIdx])
 
-        # return the chosen class
-        return classes[classesProb.index(max(classesProb))]
+    # return the chosen class
+    return classes[classesProb.index(max(classesProb))]
 
 # classify the reviews located in the test folder path using NaiveBayes algorithm 
 def NaiveBayesClassify(testFolderPath, trainingVectorsDb, featuresArr):
