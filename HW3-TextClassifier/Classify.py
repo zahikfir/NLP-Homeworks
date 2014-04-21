@@ -7,6 +7,9 @@
 import sys, os, time, codecs, math
 from collections import Counter
 
+# global var which will hold the size of the representation vectors
+repVectorLen = 0
+
 # Return the execution mod and the appropriate command arguments
 def GetCommandLineArguments():
     try:
@@ -35,8 +38,10 @@ def GetCommandLineArguments():
     return executionMode,InputFilesFolder,TestsFilesFolder
     
 # Temporarly Function - Create a feature vector from all the words in the corpus
-def GetDictionary(inputFolderPath):
+def GetIndexedDictionary(inputFolderPath):
     
+    startTime = time.clock()
+
     dic = Counter()
 
     # Get all the txt file paths from the positive folder
@@ -46,7 +51,9 @@ def GetDictionary(inputFolderPath):
     
     # update the dictionary with each review
     for txtFile in txtFilesList:
-        dic.update(Counter(codecs.open(txtFile,"r","utf-8").read().split()))
+        file = codecs.open(txtFile,"r","utf-8")
+        dic.update(Counter(file.read().split()))
+        file.close()
 
     # Get all the txt file paths from the positive folder
     print("Updating the dictionary (feature vector) from the negative reviews input folder")
@@ -55,38 +62,45 @@ def GetDictionary(inputFolderPath):
     
     # update the dictionary with each review
     for txtFile in txtFilesList:
-        dic.update(Counter(codecs.open(txtFile,"r","utf-8").read().split()))
+        file = codecs.open(txtFile,"r","utf-8")
+        dic.update(Counter(file.read().split()))
+        file.close()
+        
+    # set the representation vector len
+    global repVectorLen
+    repVectorLen = len(dic)
 
-    # return the entire dictionary
-    return dic.keys()
+    # set index to each value
+    for i, item in enumerate(dic):
+        dic[item] = i
 
-# create a feature vector dictionary from array
-def ArrayToZeroedDictionary(arr, dic = {}):
-    for item in arr:
-        dic[item] = 0
+    print("Get dictionary was executed in ", time.clock()-startTime)
+    print(len(dic), " features in the list")
+    
+    # return a key ordered dictionary
     return dic
 
+# create an empty representation vector
+def GetEmptyRepresentationVector():
+    return [0] * repVectorLen
+
 # create a representation vector to a review
-def CreateRepresentationVector(reviewPath, featuresArr):
+def CreateRepresentationVector(reviewPath, indexedFeaturesDic):
     
     # initialize a feature vector for this file
-    featuresDic = ArrayToZeroedDictionary(featuresArr)
+    repVec = GetEmptyRepresentationVector()
 
     # create a list of tokens
-    tokens = codecs.open(reviewPath, "r", "utf-8").read().split()
-        
+    file = codecs.open(reviewPath, "r", "utf-8")
+    
     # for each token, if it in the feature list enable his flag
-    for token in tokens:
-        if token in featuresArr:
-            featuresDic[token] = 1
+    for token in set(file.read().split()):
+        if token in indexedFeaturesDic:
+            repVec[indexedFeaturesDic[token]] = 1
 
-    # return only the vector
-    representationVector = list(featuresDic.values())
+    file.close()
 
-    # free the allocated memory of the dictionary
-    del(featuresDic)
-
-    return representationVector
+    return repVec
 
 # add the reviews within the specified path to the db with the given label using only the featured words
 def AddVectorsToTrainingVectors(db, inputFolderPath, featuresArr, label):
@@ -107,6 +121,8 @@ def AddVectorsToTrainingVectors(db, inputFolderPath, featuresArr, label):
 # create the training vector DB
 def CreateTrainingVectorDB(inputFolderPath, featuresArr):
     
+    startTime = time.clock()
+
     #initialize an empty DB
     db = []
 
@@ -114,6 +130,8 @@ def CreateTrainingVectorDB(inputFolderPath, featuresArr):
     db = AddVectorsToTrainingVectors(db, os.path.join(inputFolderPath, "pos"), featuresArr,  1)
     print("Add Negative reviews to the training set")
     db = AddVectorsToTrainingVectors(db, os.path.join(inputFolderPath, "neg"), featuresArr, -1)
+
+    print("CreateTrainingVectorDB was executed in ", time.clock()-startTime)
 
     return db
 
@@ -128,8 +146,11 @@ def CrossValidateDB(vectorDb, featruresArr):
     
     # number of folds
     numFolds = 10
-    precision = recall = accurracy = fScore = []
-    
+    precision = []
+    recall    = [] 
+    accurracy = []
+    fScore    = []
+  
     # run ten folds
     for i in range(numFolds):
 
@@ -138,11 +159,11 @@ def CrossValidateDB(vectorDb, featruresArr):
         # initialize the training and test db
         train = vectorDb[posStart:math.ceil(posStart + i*(N/(numFolds*2)))]
         test  = vectorDb[math.ceil(posStart + i*(N/(numFolds*2))): math.ceil(posStart + (i+1)*(N/(numFolds*2)))]
-        train = vectorDb[math.ceil(posStart + (i+1)*(N/(numFolds*2))): math.ceil(N/2)]
+        train.extend(vectorDb[math.ceil(posStart + (i+1)*(N/(numFolds*2))): math.ceil(N/2)])
 
-        train.append(vectorDb[negStart:math.ceil(negStart + i*(N/(numFolds*2)))])
-        test.append(vectorDb[math.ceil(negStart + i*(N/(numFolds*2))): math.ceil(negStart + (i+1)*(N/(numFolds*2)))])
-        train.append(vectorDb[math.ceil(negStart + (i+1)*(N/(numFolds*2))):])
+        train.extend(vectorDb[negStart:math.ceil(negStart + i*(N/(numFolds*2)))])
+        test.extend(vectorDb[math.ceil(negStart + i*(N/(numFolds*2))): math.ceil(negStart + (i+1)*(N/(numFolds*2)))])
+        train.extend(vectorDb[math.ceil(negStart + (i+1)*(N/(numFolds*2))):])
 
         TP = FP = TN = FN = 0
         
@@ -235,18 +256,18 @@ StartTime = time.clock()
 executionMode,InputFilesFolder,TestsFilesFolder = GetCommandLineArguments()
 
 # create the feature vector - For now from all the words in the text
-featuresArr = GetDictionary(InputFilesFolder)
+indexedFeaturesDic = GetIndexedDictionary(InputFilesFolder)
 
 # create the train DB vectors
-TrainingVectorDb = CreateTrainingVectorDB(InputFilesFolder, featuresArr)
+TrainingVectorDb = CreateTrainingVectorDB(InputFilesFolder, indexedFeaturesDic)
 
 # if we are in evaluation mode
 if executionMode == "-e":
-    CrossValidateDB(TrainingVectorDb, featuresArr)
+    CrossValidateDB(TrainingVectorDb, indexedFeaturesDic)
 
 # if we are in classify mode
 if executionMode == "-c":
     # Classify the new reviews using NaiveBayes classifier
-    NaiveBayesClassify(TestsFilesFolder, TrainingVectorDb, featuresArr)
+    NaiveBayesClassify(TestsFilesFolder, TrainingVectorDb, indexedFeaturesDic)
 
 print("Total Time (sec):\t\t\t" ,time.clock() - StartTime)
