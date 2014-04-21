@@ -296,7 +296,7 @@ def NaiveBayesClassify(testFolderPath, trainingProbabilityDb, indexedFeaturesDic
         vec = CreateRepresentationVector(txtFile, indexedFeaturesDic)
 
         # classify the vector
-        classification = NaiveBayesClassifyVector(vec, trainingVectorsDb)
+        classification = NaiveBayesClassifyVector(vec, trainingProbabilityDb)
 
         # take the class wich maximize the probability and print it 
         print(txtFile, classification)
