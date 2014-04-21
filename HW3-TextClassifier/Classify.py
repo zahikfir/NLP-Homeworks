@@ -185,6 +185,7 @@ def CreateProbabilityTrainingDB(vectorDb):
 # prints avarage of: recall, percision, accuracy, f-score
 def CrossValidateDB(vectorDb):
     
+    #TODO - change static var    
     # get the size of the db
     N = len(vectorDb)
     posStart = 0 
@@ -275,7 +276,7 @@ def NaiveBayesClassifyVector(vec, trainingProbabilityDb):
         # calculate the probabilities using add 1 laplace smoothing (adding 1 to the numerator and the number of classes to the denominator)
         classesProb[classIdx] = math.log(trainingProbabilityDb[classes[classIdx]][classSumIndex] / N)
         for featureIdx in range(repVectorLen):
-            classesProb[classIdx] = classesProb[classIdx] + math.log((trainingProbabilityDb[classes[classIdx]][featuresCountersArrayIndex][vec[featureIdx]][featureIdx] + 1) / (trainingProbabilityDb[classes[classIdx]][classSumIndex] + len(classes)))
+            classesProb[classIdx] = classesProb[classIdx] + math.log((trainingProbabilityDb[classes[classIdx]][featuresCountersArrayIndex][vec[featureIdx]][featureIdx]))
         classesProb[classIdx] = math.exp(classesProb[classIdx])
 
     print("classification was executed in ", time.clock()-startTime)
