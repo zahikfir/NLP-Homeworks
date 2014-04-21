@@ -160,14 +160,14 @@ def CreateProbabilityTrainingDB(vectorDb):
         vectorClassification = trainingVector[1]
 
         # increase the number of occurrances of the class
-        probabilityDb[vectorClassification][classSumIndex] = probabilityDb[vectorClassification][classSumIndex] + 1
+        probabilityDb[vectorClassification][classSumIndex] += 1
 
         # increase the number of the occurrances of the specific feature within a specific class
         for featureIdx in range(repVectorLen):
 
             vectorCurrentFeature = trainingVector[0][featureIdx]
 
-            probabilityDb[vectorClassification][featuresCountersArrayIndex][vectorCurrentFeature][featureIdx] = probabilityDb[vectorClassification][featuresCountersArrayIndex][vectorCurrentFeature][featureIdx] + 1
+            probabilityDb[vectorClassification][featuresCountersArrayIndex][vectorCurrentFeature][featureIdx] += 1
 
     # calculate the probabilities using add 1 laplace smoothing (adding 1 to the numerator and the number of classes to the denominator) and replace the counts
     for clasificationClass in probabilityDb.keys():
@@ -273,11 +273,10 @@ def NaiveBayesClassifyVector(vec, trainingProbabilityDb):
     # for each class calculate it's probability
     for classIdx in range(len(classes)):
             
-        # calculate the probabilities using add 1 laplace smoothing (adding 1 to the numerator and the number of classes to the denominator)
+        # calculate the probabilities
         classesProb[classIdx] = math.log(trainingProbabilityDb[classes[classIdx]][classSumIndex] / N)
         for featureIdx in range(repVectorLen):
             classesProb[classIdx] = classesProb[classIdx] + math.log((trainingProbabilityDb[classes[classIdx]][featuresCountersArrayIndex][vec[featureIdx]][featureIdx]))
-        classesProb[classIdx] = math.exp(classesProb[classIdx])
 
     print("classification was executed in ", time.clock()-startTime)
 
