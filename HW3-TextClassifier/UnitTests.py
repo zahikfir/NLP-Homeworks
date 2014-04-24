@@ -84,7 +84,7 @@ def TokenDiff(inputFolderPath):
         if NegVal == 0:
             OnlyPos.append( (PosKey,PosVal) )
         else:
-            InBoth.append( (PosKey,abs(PosVal-NegVal)) )
+            InBoth.append( (PosKey,abs(PosVal-NegVal),PosVal,NegVal) )
             NegDic.pop(PosKey)            
     for (NegKey,NegVal) in NegDic.items():
         OnlyNeg.append( (NegKey,NegVal) )
@@ -106,7 +106,7 @@ def TokenDiff(inputFolderPath):
     InBoth.sort(key=operator.itemgetter(0))                  # Alphabetically sort
     InBoth.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
     InBothFile = codecs.open(os.path.join(inputFolderPath, "InBothFile.txt"), "w", "utf-8")
-    InBothFile.writelines((("%15d\t%30s\t%d " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(InBoth)))
+    InBothFile.writelines((("%15d\t %30s\t diff:%d\t pos:%d\t neg:%d\t " + os.linesep) % (idx+1,val[0],val[1],val[2],val[3]) for idx, val in enumerate(InBoth)))
     InBothFile.close()
 
     print('Done!')
