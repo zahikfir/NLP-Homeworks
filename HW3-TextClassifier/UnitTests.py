@@ -99,6 +99,7 @@ def TokenDiff(inputFolderPath):
         file.close()
     print("Count Negative tokens (sec):\t\t\t" ,time.clock() - StartTime)
 
+    StartTime = time.clock()
     # Calc differences 
     OnlyPos = []
     OnlyNeg = []
@@ -112,8 +113,9 @@ def TokenDiff(inputFolderPath):
             NegDic.pop(PosKey)            
     for (NegKey,NegVal) in NegDic.items():
         OnlyNeg.append( (NegKey,NegVal,NegFileSpred[NegKey]) )
-
+    print("Calc differences (sec):\t\t\t" ,time.clock() - StartTime)
     
+    StartTime = time.clock()
     # Write the results into the files
     OnlyPos.sort(key=operator.itemgetter(0))                  # Alphabetically sort
     OnlyPos.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
@@ -150,5 +152,24 @@ def TokenDiff(inputFolderPath):
     InBothFile.writelines(("\t\t\t Total negative reviews %d " + os.linesep) % (NegCount))
     InBothFile.writelines((("%15d\t %30s\t diff:%d\t pos:%d\t pospred:%d\t neg:%d\t negpred:%d\t" + os.linesep) % (idx+1,val[0],val[1],val[2],val[3],val[4],val[5]) for idx, val in enumerate(InBoth)))
     InBothFile.close()
+    print("Write the files (sec):\t\t\t" ,time.clock() - StartTime)
 
-    print("Done in (sec):\t\t\t" ,time.clock() - TotalStartTime)
+    StartTime = time.clock()
+    # Create Feture Dic
+    FeturesDic = Counter()
+    Iter = 0;
+    for Token,Appearances,Spred in OnlyPos:
+        if Spred >= 4:
+            FeturesDic[Token] = Iter;
+            Iter = Iter + 1
+    for Token,Appearances,Spred in OnlyNeg:
+        if Spred >= 4:
+            FeturesDic[Token] = Iter;
+            Iter = Iter + 1
+    print("Create Feture Dic (sec):\t\t\t" ,time.clock() - StartTime)
+
+    # Set the global representation vector length  
+    # TODO !!!
+   
+    print("TokenDiff() Done in (sec):\t\t\t" ,time.clock() - TotalStartTime)
+    return FeturesDic
