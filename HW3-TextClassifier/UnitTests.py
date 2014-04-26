@@ -60,21 +60,39 @@ def TokenDiff(inputFolderPath):
     # Count positive tokens 
     PosDic = Counter()
     PosinputFolderPath = os.path.join(inputFolderPath, "pos")
-    txtFilesList = [ os.path.join(PosinputFolderPath, f) for f in os.listdir(PosinputFolderPath) if (os.path.isfile(os.path.join(PosinputFolderPath, f)) & str(f).endswith(".txt"))]
-    for txtFile in txtFilesList:
+    PosTxtFilesList = [ os.path.join(PosinputFolderPath, f) for f in os.listdir(PosinputFolderPath) if (os.path.isfile(os.path.join(PosinputFolderPath, f)) & str(f).endswith(".txt"))]
+    for txtFile in PosTxtFilesList:
         file = codecs.open(txtFile, "r", "utf-8")
         PosDic.update(Counter(file.read().split()))
         file.close()
-        
+    
+    # Count positive tokens files spred
+    PosFileSpred = Counter()
+    for (Key,Val) in PosDic.items():
+        for txtFile in PosTxtFilesList:
+            file = codecs.open(txtFile, "r", "utf-8")
+            if Key in file.read().split():
+                PosFileSpred.update([Key])
+            file.close()
+               
     # Count Negative tokens
     NegDic = Counter()
     NeginputFolderPath = os.path.join(inputFolderPath, "neg")
-    txtFilesList = [ os.path.join(NeginputFolderPath, f) for f in os.listdir(NeginputFolderPath) if (os.path.isfile(os.path.join(NeginputFolderPath, f)) & str(f).endswith(".txt"))]
-    for txtFile in txtFilesList:
+    NegTxtFilesList = [ os.path.join(NeginputFolderPath, f) for f in os.listdir(NeginputFolderPath) if (os.path.isfile(os.path.join(NeginputFolderPath, f)) & str(f).endswith(".txt"))]
+    for txtFile in NegTxtFilesList:
         file = codecs.open(txtFile, "r", "utf-8")
         NegDic.update(Counter(file.read().split()))
         file.close()
 
+    # Count Negative tokens files spred
+    NegFileSpred = Counter()
+    for (Key,Val) in NegDic.items():
+        for txtFile in NegTxtFilesList:
+            file = codecs.open(txtFile, "r", "utf-8")
+            if Key in file.read().split():
+                NegFileSpred.update([Key])
+            file.close()
+    
     # Calc differences 
     OnlyPos = []
     OnlyNeg = []
@@ -82,31 +100,31 @@ def TokenDiff(inputFolderPath):
     for (PosKey,PosVal) in PosDic.items():
         NegVal = NegDic[PosKey]
         if NegVal == 0:
-            OnlyPos.append( (PosKey,PosVal) )
+            OnlyPos.append( (PosKey,PosVal,PosFileSpred[PosKey]))
         else:
-            InBoth.append( (PosKey,abs(PosVal-NegVal),PosVal,NegVal) )
+            InBoth.append( (PosKey,abs(PosVal-NegVal),PosVal,PosFileSpred[PosKey],NegVal,NegFileSpred[PosKey]) )
             NegDic.pop(PosKey)            
     for (NegKey,NegVal) in NegDic.items():
-        OnlyNeg.append( (NegKey,NegVal) )
+        OnlyNeg.append( (NegKey,NegVal,NegFileSpred[NegKey]) )
 
     
     # Write the results into the files
     OnlyPos.sort(key=operator.itemgetter(0))                  # Alphabetically sort
     OnlyPos.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
     OnlyPosFile = codecs.open(os.path.join(inputFolderPath, "OnlyPosFile.txt"), "w", "utf-8")
-    OnlyPosFile.writelines((("%15d\t%30s\t%d " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(OnlyPos)))
+    OnlyPosFile.writelines((("%15d\t %30s\t %d\t spred-%d\t" + os.linesep) % (idx + 1, val[0], val[1],val[2] ) for idx, val in enumerate(OnlyPos)))
     OnlyPosFile.close()
 
     OnlyNeg.sort(key=operator.itemgetter(0))                  # Alphabetically sort
     OnlyNeg.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
     OnlyNegFile = codecs.open(os.path.join(inputFolderPath, "OnlyNegFile.txt"), "w", "utf-8")
-    OnlyNegFile.writelines((("%15d\t%30s\t%d " + os.linesep) % (idx + 1, val[0], val[1] ) for idx, val in enumerate(OnlyNeg)))
+    OnlyNegFile.writelines((("%15d\t %30s\t %d\t spred-%d\t " + os.linesep) % (idx + 1, val[0], val[1],val[2] ) for idx, val in enumerate(OnlyNeg)))
     OnlyNegFile.close()
 
     InBoth.sort(key=operator.itemgetter(0))                  # Alphabetically sort
     InBoth.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
     InBothFile = codecs.open(os.path.join(inputFolderPath, "InBothFile.txt"), "w", "utf-8")
-    InBothFile.writelines((("%15d\t %30s\t diff:%d\t pos:%d\t neg:%d\t " + os.linesep) % (idx+1,val[0],val[1],val[2],val[3]) for idx, val in enumerate(InBoth)))
+    InBothFile.writelines((("%15d\t %30s\t diff:%d\t pos:%d\t pospred:%d\t neg:%d\t negpred:%d\t" + os.linesep) % (idx+1,val[0],val[1],val[2],val[3],val[4],val[5]) for idx, val in enumerate(InBoth)))
     InBothFile.close()
 
     print('Done!')
