@@ -122,9 +122,23 @@ def TokenDiff(inputFolderPath):
     OnlyPosFile.writelines((("%15d\t %30s\t %d\t spred-%d\t " + os.linesep) % (idx + 1, val[0], val[1],val[2] ) for idx, val in enumerate(OnlyPos)))
     OnlyPosFile.close()
 
+    OnlyPos.sort(key=operator.itemgetter(0))                  # Alphabetically sort
+    OnlyPos.sort(key=operator.itemgetter(2),reverse= True)    # Sort by count
+    OnlyPosFile = codecs.open(os.path.join(inputFolderPath, "OnlyPosFile_SortBySpred.txt"), "w", "utf-8")
+    OnlyPosFile.writelines(("\t\t\t Total Positive reviews %d " + os.linesep) % (PosCount))
+    OnlyPosFile.writelines((("%15d\t %30s\t %d\t spred-%d\t " + os.linesep) % (idx + 1, val[0], val[1],val[2] ) for idx, val in enumerate(OnlyPos)))
+    OnlyPosFile.close()
+
     OnlyNeg.sort(key=operator.itemgetter(0))                  # Alphabetically sort
     OnlyNeg.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
     OnlyNegFile = codecs.open(os.path.join(inputFolderPath, "OnlyNegFile.txt"), "w", "utf-8")
+    OnlyNegFile.writelines(("\t\t\t Total negative reviews %d " + os.linesep) % (NegCount))
+    OnlyNegFile.writelines((("%15d\t %30s\t %d\t spred-%d\t " + os.linesep) % (idx + 1, val[0], val[1],val[2] ) for idx, val in enumerate(OnlyNeg)))
+    OnlyNegFile.close()
+
+    OnlyNeg.sort(key=operator.itemgetter(0))                  # Alphabetically sort
+    OnlyNeg.sort(key=operator.itemgetter(2),reverse= True)    # Sort by count
+    OnlyNegFile = codecs.open(os.path.join(inputFolderPath, "OnlyNegFile_SortBySpred.txt"), "w", "utf-8")
     OnlyNegFile.writelines(("\t\t\t Total negative reviews %d " + os.linesep) % (NegCount))
     OnlyNegFile.writelines((("%15d\t %30s\t %d\t spred-%d\t " + os.linesep) % (idx + 1, val[0], val[1],val[2] ) for idx, val in enumerate(OnlyNeg)))
     OnlyNegFile.close()
