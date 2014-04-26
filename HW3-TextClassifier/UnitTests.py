@@ -63,9 +63,11 @@ def TokenDiff(inputFolderPath):
     # Count positive tokens 
     PosDic = Counter()
     PosFileSpred = Counter()
+    PosCount = 0;
     PosinputFolderPath = os.path.join(inputFolderPath, "pos")
     PosTxtFilesList = [ os.path.join(PosinputFolderPath, f) for f in os.listdir(PosinputFolderPath) if (os.path.isfile(os.path.join(PosinputFolderPath, f)) & str(f).endswith(".txt"))]
     for txtFile in PosTxtFilesList:
+        PosCount = PosCount + 1;
         SpredCounted = []
         file = codecs.open(txtFile, "r", "utf-8")
         TokenList = file.read().split()
@@ -81,9 +83,11 @@ def TokenDiff(inputFolderPath):
     # Count Negative tokens 
     NegDic = Counter()
     NegFileSpred = Counter()
+    NegCount = 0
     NegInputFolderPath = os.path.join(inputFolderPath, "neg")
     NegTxtFilesList = [ os.path.join(NegInputFolderPath, f) for f in os.listdir(NegInputFolderPath) if (os.path.isfile(os.path.join(NegInputFolderPath, f)) & str(f).endswith(".txt"))]
     for txtFile in NegTxtFilesList:
+        NegCount = NegCount + 1
         SpredCounted = []
         file = codecs.open(txtFile, "r", "utf-8")
         TokenList = file.read().split()
@@ -114,18 +118,22 @@ def TokenDiff(inputFolderPath):
     OnlyPos.sort(key=operator.itemgetter(0))                  # Alphabetically sort
     OnlyPos.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
     OnlyPosFile = codecs.open(os.path.join(inputFolderPath, "OnlyPosFile.txt"), "w", "utf-8")
-    OnlyPosFile.writelines((("%15d\t %30s\t %d\t spred-%d\t" + os.linesep) % (idx + 1, val[0], val[1],val[2] ) for idx, val in enumerate(OnlyPos)))
+    OnlyPosFile.writelines(("\t\t\t Total Positive reviews %d " + os.linesep) % (PosCount))
+    OnlyPosFile.writelines((("%15d\t %30s\t %d\t spred-%d\t " + os.linesep) % (idx + 1, val[0], val[1],val[2] ) for idx, val in enumerate(OnlyPos)))
     OnlyPosFile.close()
 
     OnlyNeg.sort(key=operator.itemgetter(0))                  # Alphabetically sort
     OnlyNeg.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
     OnlyNegFile = codecs.open(os.path.join(inputFolderPath, "OnlyNegFile.txt"), "w", "utf-8")
+    OnlyNegFile.writelines(("\t\t\t Total negative reviews %d " + os.linesep) % (NegCount))
     OnlyNegFile.writelines((("%15d\t %30s\t %d\t spred-%d\t " + os.linesep) % (idx + 1, val[0], val[1],val[2] ) for idx, val in enumerate(OnlyNeg)))
     OnlyNegFile.close()
 
     InBoth.sort(key=operator.itemgetter(0))                  # Alphabetically sort
     InBoth.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
     InBothFile = codecs.open(os.path.join(inputFolderPath, "InBothFile.txt"), "w", "utf-8")
+    InBothFile.writelines(("\t\t\t Total Positive reviews %d " + os.linesep) % (PosCount))
+    InBothFile.writelines(("\t\t\t Total negative reviews %d " + os.linesep) % (NegCount))
     InBothFile.writelines((("%15d\t %30s\t diff:%d\t pos:%d\t pospred:%d\t neg:%d\t negpred:%d\t" + os.linesep) % (idx+1,val[0],val[1],val[2],val[3],val[4],val[5]) for idx, val in enumerate(InBoth)))
     InBothFile.close()
 
