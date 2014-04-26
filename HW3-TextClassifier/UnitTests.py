@@ -57,42 +57,44 @@ def Test_CreateProbabilityTrainingDB():
 
 def TokenDiff(inputFolderPath):
     
+    TotalStartTime = time.clock()
+
+    StartTime = time.clock()
     # Count positive tokens 
     PosDic = Counter()
+    PosFileSpred = Counter()
     PosinputFolderPath = os.path.join(inputFolderPath, "pos")
     PosTxtFilesList = [ os.path.join(PosinputFolderPath, f) for f in os.listdir(PosinputFolderPath) if (os.path.isfile(os.path.join(PosinputFolderPath, f)) & str(f).endswith(".txt"))]
     for txtFile in PosTxtFilesList:
+        SpredCounted = []
         file = codecs.open(txtFile, "r", "utf-8")
-        PosDic.update(Counter(file.read().split()))
+        TokenList = file.read().split()
+        for Token in TokenList:
+            PosDic.update([Token])
+            if not(Token in SpredCounted):
+                SpredCounted.append(Token)
+                PosFileSpred.update([Token])
         file.close()
+    print("Count positive tokens (sec):\t\t\t" ,time.clock() - StartTime)
     
-    # Count positive tokens files spred
-    PosFileSpred = Counter()
-    for (Key,Val) in PosDic.items():
-        for txtFile in PosTxtFilesList:
-            file = codecs.open(txtFile, "r", "utf-8")
-            if Key in file.read().split():
-                PosFileSpred.update([Key])
-            file.close()
-               
-    # Count Negative tokens
+    StartTime = time.clock()
+    # Count Negative tokens 
     NegDic = Counter()
-    NeginputFolderPath = os.path.join(inputFolderPath, "neg")
-    NegTxtFilesList = [ os.path.join(NeginputFolderPath, f) for f in os.listdir(NeginputFolderPath) if (os.path.isfile(os.path.join(NeginputFolderPath, f)) & str(f).endswith(".txt"))]
-    for txtFile in NegTxtFilesList:
-        file = codecs.open(txtFile, "r", "utf-8")
-        NegDic.update(Counter(file.read().split()))
-        file.close()
-
-    # Count Negative tokens files spred
     NegFileSpred = Counter()
-    for (Key,Val) in NegDic.items():
-        for txtFile in NegTxtFilesList:
-            file = codecs.open(txtFile, "r", "utf-8")
-            if Key in file.read().split():
-                NegFileSpred.update([Key])
-            file.close()
-    
+    NegInputFolderPath = os.path.join(inputFolderPath, "neg")
+    NegTxtFilesList = [ os.path.join(NegInputFolderPath, f) for f in os.listdir(NegInputFolderPath) if (os.path.isfile(os.path.join(NegInputFolderPath, f)) & str(f).endswith(".txt"))]
+    for txtFile in NegTxtFilesList:
+        SpredCounted = []
+        file = codecs.open(txtFile, "r", "utf-8")
+        TokenList = file.read().split()
+        for Token in TokenList:
+            NegDic.update([Token])
+            if not(Token in SpredCounted):
+                SpredCounted.append(Token)
+                NegFileSpred.update([Token])
+        file.close()
+    print("Count Negative tokens (sec):\t\t\t" ,time.clock() - StartTime)
+
     # Calc differences 
     OnlyPos = []
     OnlyNeg = []
@@ -127,4 +129,4 @@ def TokenDiff(inputFolderPath):
     InBothFile.writelines((("%15d\t %30s\t diff:%d\t pos:%d\t pospred:%d\t neg:%d\t negpred:%d\t" + os.linesep) % (idx+1,val[0],val[1],val[2],val[3],val[4],val[5]) for idx, val in enumerate(InBoth)))
     InBothFile.close()
 
-    print('Done!')
+    print("Done in (sec):\t\t\t" ,time.clock() - TotalStartTime)
