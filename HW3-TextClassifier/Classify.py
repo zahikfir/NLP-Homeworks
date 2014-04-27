@@ -153,7 +153,7 @@ def CreateProbabilityTrainingDB(vectorDb):
 
     classSumIndex = 0
     featuresCountersArrayIndex = 1
-
+    
     # run over all the vectors in the training Db and count the occurrances
     for trainingVector in vectorDb:
         
@@ -163,18 +163,21 @@ def CreateProbabilityTrainingDB(vectorDb):
         probabilityDb[vectorClassification][classSumIndex] += 1
 
         # increase the number of the occurrances of the specific feature within a specific class
-        for featureIdx in range(repVectorLen):
-
-            vectorCurrentFeature = trainingVector[0][featureIdx]
-
-            probabilityDb[vectorClassification][featuresCountersArrayIndex][vectorCurrentFeature][featureIdx] += 1
-
+        if vectorClassification == 1: probabilityDb[1][featuresCountersArrayIndex][1] = [x + y for x,y in zip(probabilityDb[1][featuresCountersArrayIndex][1],trainingVector[0])]
+        elif vectorClassification == -1: probabilityDb[-1][featuresCountersArrayIndex][1] =[x + y for x,y in zip(probabilityDb[-1][featuresCountersArrayIndex][1],trainingVector[0])]
+   
+    # update zero arrays
+    TempVec = [probabilityDb[1][classSumIndex]]*repVectorLen
+    probabilityDb[1][featuresCountersArrayIndex][0] = [x - y for x,y in zip (TempVec,probabilityDb[1][featuresCountersArrayIndex][1])]
+    
+    TempVec = [probabilityDb[-1][classSumIndex]]*repVectorLen
+    probabilityDb[-1][featuresCountersArrayIndex][0] = [x - y for x,y in zip (TempVec,probabilityDb[-1][featuresCountersArrayIndex][1])]
+    
     # calculate the probabilities using add 1 laplace smoothing (adding 1 to the numerator and the number of classes to the denominator) and replace the counts
     for clasificationClass in probabilityDb.keys():
         for counterVector in probabilityDb[clasificationClass][1].values():
             for featureIdx in range(repVectorLen):
-               counterVector[featureIdx] = (counterVector[featureIdx] + 1) / (probabilityDb[clasificationClass][classSumIndex] + len(probabilityDb.keys()))
-
+               counterVector[featureIdx] = math.log((counterVector[featureIdx] + 1) / (probabilityDb[clasificationClass][classSumIndex] + len(probabilityDb.keys())))
 
     print("probabilityTrainingDb creation was executed in ", time.clock()-startTime)
 
@@ -201,10 +204,7 @@ def CrossValidateDB(vectorDb):
     # run ten folds
     for i in range(numFolds):
 
-        print("Evaluating fold #", i)
-
-        print("Start copying arrays to train and test dbs")
-        startTime = time.clock()
+        print("\nEvaluating fold #", i)
 
         # initialize the training and test db
         train = vectorDb[posStart:math.ceil(posStart + i*(N/(numFolds*2)))]
@@ -215,14 +215,13 @@ def CrossValidateDB(vectorDb):
         test.extend(vectorDb[math.ceil(negStart + i*(N/(numFolds*2))): math.ceil(negStart + (i+1)*(N/(numFolds*2)))])
         train.extend(vectorDb[math.ceil(negStart + (i+1)*(N/(numFolds*2))):])
 
-        print("copies was executed in ", time.clock()-startTime)
-
         # create probability train db
         probTrainDb = CreateProbabilityTrainingDB(train)
 
         TP = FP = TN = FN = 0
         
         # run classification on each vector in the test db
+        print("Start testing vectors")
         for testVec in test:
             
             # classify the vector
@@ -248,17 +247,14 @@ def CrossValidateDB(vectorDb):
         print("fScore : ", fScore[i])
 
     # print the avarage over all folds
-    print("avg precision : ", float(sum(precision))/len(precision))
+    print("\navg precision : ", float(sum(precision))/len(precision))
     print("avg recall : ", float(sum(recall))/len(recall))
     print("avg accurracy : ", float(sum(accurracy))/len(accurracy))
     print("avg fScore : ", float(sum(fScore))/len(fScore))
 
 # classify the given vector using naive Bayes algorithm
 def NaiveBayesClassifyVector(vec, trainingProbabilityDb):
-    
-    print("Start classifing vector")
-    startTime = time.clock()
-        
+          
     # helpers
     N = len(trainingProbabilityDb)
     classSumIndex = 0
@@ -276,9 +272,7 @@ def NaiveBayesClassifyVector(vec, trainingProbabilityDb):
         # calculate the probabilities
         classesProb[classIdx] = math.log(trainingProbabilityDb[classes[classIdx]][classSumIndex] / N)
         for featureIdx in range(repVectorLen):
-            classesProb[classIdx] = classesProb[classIdx] + math.log((trainingProbabilityDb[classes[classIdx]][featuresCountersArrayIndex][vec[featureIdx]][featureIdx]))
-
-    print("classification was executed in ", time.clock()-startTime)
+            classesProb[classIdx] = classesProb[classIdx] + (trainingProbabilityDb[classes[classIdx]][featuresCountersArrayIndex][vec[featureIdx]][featureIdx])
 
     # return the chosen class
     return classes[classesProb.index(max(classesProb))]
