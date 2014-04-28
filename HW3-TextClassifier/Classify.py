@@ -203,8 +203,8 @@ def CrossValidateDB(vectorDb):
   
     # run ten folds
     for i in range(numFolds):
-
-        print("\nEvaluating fold #", i)
+        foldStartTime = time.clock()
+        print("\nEvaluating fold #", i+1)
 
         # initialize the training and test db
         train = vectorDb[posStart:math.ceil(posStart + i*(N/(numFolds*2)))]
@@ -245,6 +245,8 @@ def CrossValidateDB(vectorDb):
         print("recall : ", recall[i])
         print("accurracy : ", accurracy[i])
         print("fScore : ", fScore[i])
+
+        print("Fold ",i+1," was executed in: ",time.clock()-foldStartTime,"sec")
 
     # print the avarage over all folds
     print("\navg precision : ", float(sum(precision))/len(precision))
