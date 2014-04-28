@@ -167,25 +167,41 @@ def TokenDiff(inputFolderPath):
         if Spred >= 2:
             FeturesDic[Token] = Iter;
             Iter = Iter + 1
-    #inBothList = []
-    #for Item in enumerate(InBoth):
-    #    differenceRatio = max( (Item[1][4]/Item[1][2]) , (Item[1][2]/Item[1][4]) )
-    #    inBothList.append( (Item[1][0],differenceRatio) )
-    #inBothList.sort(key=operator.itemgetter(0))
-    #inBothList.sort(key=operator.itemgetter(1),reverse= True)
-    #for item in inBothList[0:10]:
-    #    print(item[1])
-    #for item in inBothList[-10:]:
-    #    print(item[1])
-    #for item in inBothList[0:2000]:
-    #    FeturesDic[item[0]] = Iter;
-    #    Iter = Iter + 1
-    #FeturesDic = sorted(FeturesDic.items(),key=operator.itemgetter(1))
+    inBothList = []
+    for Item in enumerate(InBoth):
+        differenceRatio = max( (Item[1][4]/Item[1][2]) , (Item[1][2]/Item[1][4]) )
+        inBothList.append( (Item[1][0],differenceRatio) )
+    inBothList.sort(key=operator.itemgetter(0))
+    inBothList.sort(key=operator.itemgetter(1),reverse= True)
+    for item in inBothList:
+        if item[1] > 1:
+            FeturesDic[item[0]] = Iter;
+            Iter = Iter + 1
 
     print("Create Feture Dic (sec):\t\t\t" ,time.clock() - StartTime)
 
     # Set the global representation vector length  
     # TODO !!!
    
+    FeturesDicFile = codecs.open(os.path.join(inputFolderPath, "FeturesDicFile.txt"), "w", "utf-8")
+    for Key,Val in FeturesDic.items():
+        FeturesDicFile.writelines(Key)
+        FeturesDicFile.writelines(os.linesep)
+    FeturesDicFile.close()
+
     print("TokenDiff() Done in (sec):\t\t\t" ,time.clock() - TotalStartTime)
     return FeturesDic
+
+def GetIndexedDictionary2(InputFolderPath):
+    FeturesDic = Counter()
+    itr = 0
+
+    WordsPath = os.path.join(InputFolderPath, "words.txt")
+    file = codecs.open(WordsPath, "r", "utf-8")
+    WordList = file.read().split()
+    for word in WordList:
+        FeturesDic[word] = itr;
+        itr = itr + 1
+    return FeturesDic
+
+        
