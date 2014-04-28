@@ -8,7 +8,7 @@ import sys, os, time, codecs, math
 from collections import Counter
 
 # When true, the 300 most common tokens will be removed from the dicionary
-bRemove300MostCommon = False
+bRemove300MostCommon = True
 
 # global var which will hold the size of the representation vectors
 repVectorLen = 0
@@ -293,6 +293,9 @@ def NaiveBayesClassify(testFolderPath, trainingProbabilityDb, indexedFeaturesDic
      # Get all the txt file paths from the test folder
     txtFilesList = [ os.path.join(testFolderPath, f) for f in os.listdir(testFolderPath) if (os.path.isfile(os.path.join(testFolderPath, f)) & str(f).endswith(".txt"))]
     
+    posCount = 0
+    negCount = 0
+
     # try to classify each txtFile
     for txtFile in txtFilesList:
         
@@ -305,6 +308,13 @@ def NaiveBayesClassify(testFolderPath, trainingProbabilityDb, indexedFeaturesDic
         # take the class wich maximize the probability and print it 
         print(txtFile, classification)
 
+        if classification == 1:
+            posCount = posCount + 1
+        if classification == -1:
+            negCount = negCount + 1
+
+    print("posCount= ",posCount)
+    print("negCount = ",negCount)
 #********************** NLP **********************#
 # Main Program 
 
@@ -314,7 +324,10 @@ StartTime = time.clock()
 executionMode,InputFilesFolder,TestsFilesFolder = GetCommandLineArguments()
 
 # create the feature vector - For now from all the words in the text
-indexedFeaturesDic = GetIndexedDictionary(InputFilesFolder)
+#indexedFeaturesDic = GetIndexedDictionary(InputFilesFolder)
+import UnitTests
+indexedFeaturesDic = UnitTests.TokenDiff(InputFilesFolder)
+repVectorLen = len(indexedFeaturesDic)
 
 # create the train DB vectors
 TrainingVectorDb = CreateTrainingVectorDB(InputFilesFolder, indexedFeaturesDic)
@@ -333,3 +346,4 @@ if executionMode == "-c":
     NaiveBayesClassify(TestsFilesFolder, ProbabilityTrainingDb, indexedFeaturesDic)
 
 print("Total Time (sec):\t\t\t" ,time.clock() - StartTime)
+sys.stdin.read(1)
