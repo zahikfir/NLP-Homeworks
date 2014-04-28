@@ -7,6 +7,9 @@
 import sys, os, time, codecs, math
 from collections import Counter
 
+# When true, the 300 most common tokens will be removed from the dicionary
+bRemove300MostCommon = False
+
 # global var which will hold the size of the representation vectors
 repVectorLen = 0
 
@@ -68,6 +71,11 @@ def GetIndexedDictionary(inputFolderPath):
         
     # Temp fast dictionary
     #dic = {"good":0,"bad":1}
+    
+    # Remove the 300 mosot common out of the dictionary
+    if(bRemove300MostCommon == True):
+        for i,j in enumerate(dic.most_common()[0:300]):
+            dic.pop(j[0])
 
     # set the representation vector len
     global repVectorLen
