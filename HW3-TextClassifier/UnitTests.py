@@ -191,3 +191,17 @@ def TokenDiff(inputFolderPath):
 
     print("TokenDiff() Done in (sec):\t\t\t" ,time.clock() - TotalStartTime)
     return FeturesDic
+
+def GetIndexedDictionary2(InputFolderPath):
+    FeturesDic = Counter()
+    itr = 0
+
+    WordsPath = os.path.join(InputFolderPath, "FeturesDicFile.txt")
+    file = codecs.open(WordsPath, "r", "utf-8")
+    WordList = file.read().split()
+    for word in WordList:
+        FeturesDic[word] = itr;
+        itr = itr + 1
+    return FeturesDic
+
+        
