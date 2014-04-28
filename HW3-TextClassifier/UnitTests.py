@@ -178,8 +178,9 @@ def TokenDiff(inputFolderPath):
     #for item in inBothList[-10:]:
     #    print(item[1])
     #for item in inBothList[0:2000]:
-    #    FeturesDic[item[0]] = Iter;
-    #    Iter = Iter + 1
+    #    if item[1] > 1:
+    #        FeturesDic[item[0]] = Iter;
+    #        Iter = Iter + 1
     #FeturesDic = sorted(FeturesDic.items(),key=operator.itemgetter(1))
 
     print("Create Feture Dic (sec):\t\t\t" ,time.clock() - StartTime)
