@@ -8,10 +8,12 @@ import sys, os, time, codecs, math
 from collections import Counter
 
 # When true, the 300 most common tokens will be removed from the dicionary
-bRemove300MostCommon = True
+bRemove300MostCommon = False
 
 # global var which will hold the size of the representation vectors
 repVectorLen = 0
+countPos     = 0
+countNeg     = 0
 
 # Return the execution mod and the appropriate command arguments
 def GetCommandLineArguments():
@@ -127,7 +129,7 @@ def AddVectorsToTrainingVectors(db, inputFolderPath, indexedFeaturesDic, label):
         db.append(trainExample)
 
     # return the updated db
-    return db
+    return db , len(txtFilesList)
 
 # create the training vector DB
 def CreateTrainingVectorDB(inputFolderPath, indexedFeaturesDic):
@@ -138,9 +140,11 @@ def CreateTrainingVectorDB(inputFolderPath, indexedFeaturesDic):
     db = []
 
     print("Add Positive reviews to the training set")
-    db = AddVectorsToTrainingVectors(db, os.path.join(inputFolderPath, "pos"), indexedFeaturesDic,  1)
+    global countPos
+    db, countPos = AddVectorsToTrainingVectors(db, os.path.join(inputFolderPath, "pos"), indexedFeaturesDic,  1)
+    global countNeg
     print("Add Negative reviews to the training set")
-    db = AddVectorsToTrainingVectors(db, os.path.join(inputFolderPath, "neg"), indexedFeaturesDic, -1)
+    db, countNeg = AddVectorsToTrainingVectors(db, os.path.join(inputFolderPath, "neg"), indexedFeaturesDic, -1)
 
     print("CreateTrainingVectorDB was executed in ", time.clock()-startTime)
 
@@ -196,11 +200,9 @@ def CreateProbabilityTrainingDB(vectorDb):
 # prints avarage of: recall, percision, accuracy, f-score
 def CrossValidateDB(vectorDb):
     
-    #TODO - change static var    
-    # get the size of the db
     N = len(vectorDb)
     posStart = 0 
-    negStart = math.ceil(N/2) 
+    negStart = countPos
     
     # number of folds
     numFolds = 10
@@ -215,13 +217,13 @@ def CrossValidateDB(vectorDb):
         print("\nEvaluating fold #", i+1)
 
         # initialize the training and test db
-        train = vectorDb[posStart:math.ceil(posStart + i*(N/(numFolds*2)))]
-        test  = vectorDb[math.ceil(posStart + i*(N/(numFolds*2))): math.ceil(posStart + (i+1)*(N/(numFolds*2)))]
-        train.extend(vectorDb[math.ceil(posStart + (i+1)*(N/(numFolds*2))): math.ceil(N/2)])
+        train = vectorDb[posStart:math.ceil(posStart + i*(countPos/(numFolds)))]
+        test  = vectorDb[math.ceil(posStart + i*(countPos/numFolds)): math.ceil(posStart + (i+1)*(countPos/(numFolds)))]
+        train.extend(vectorDb[math.ceil(posStart + (i+1)*(countPos/(numFolds))): negStart])
 
-        train.extend(vectorDb[negStart:math.ceil(negStart + i*(N/(numFolds*2)))])
-        test.extend(vectorDb[math.ceil(negStart + i*(N/(numFolds*2))): math.ceil(negStart + (i+1)*(N/(numFolds*2)))])
-        train.extend(vectorDb[math.ceil(negStart + (i+1)*(N/(numFolds*2))):])
+        train.extend(vectorDb[negStart:math.ceil(negStart + i*(countNeg/(numFolds)))])
+        test.extend(vectorDb[math.ceil(negStart + i*(countNeg/(numFolds))): math.ceil(negStart + (i+1)*(countNeg/(numFolds)))])
+        train.extend(vectorDb[math.ceil(negStart + (i+1)*(countNeg/(numFolds))):])
 
         # create probability train db
         probTrainDb = CreateProbabilityTrainingDB(train)
