@@ -8,7 +8,7 @@ import sys, os, time, codecs, math
 from collections import Counter
 
 # When true, the 300 most common tokens will be removed from the dicionary
-bRemove300MostCommon = False
+bRemove300MostCommon = True
 
 # global var which will hold the size of the representation vectors
 repVectorLen = 0
@@ -41,7 +41,52 @@ def GetCommandLineArguments():
     print('Start Program. Execution mode: {0}, InputFolder: {1}, TestFolder: {2}'.format(executionMode, InputFilesFolder, TestsFilesFolder))
 
     return executionMode,InputFilesFolder,TestsFilesFolder
+   
+# remove the 300 most common words in the corputs from the bag of words if thay exist 
+def Remove300MostCommonWords(indexedDictionary, inputFolderPath):
+    startTime = time.clock()
+
+    dic = Counter()
+
+    # Get all the txt file paths from the positive folder
+    print("Remove the 300 most common words in the corpus")
+    posFolder = os.path.join(inputFolderPath, "pos")
+    txtFilesList = [ os.path.join(posFolder, f) for f in os.listdir(posFolder) if (os.path.isfile(os.path.join(posFolder, f)) & str(f).endswith(".txt"))]
     
+    # update the dictionary with each review
+    for txtFile in txtFilesList:
+        file = codecs.open(txtFile,"r","utf-8")
+        dic.update(Counter(file.read().split()))
+        file.close()
+
+    # Get all the txt file paths from the positive folder
+    posFolder = os.path.join(inputFolderPath, "neg")
+    txtFilesList = [ os.path.join(posFolder, f) for f in os.listdir(posFolder) if (os.path.isfile(os.path.join(posFolder, f)) & str(f).endswith(".txt"))]
+    
+    # update the dictionary with each review
+    for txtFile in txtFilesList:
+        file = codecs.open(txtFile,"r","utf-8")
+        dic.update(Counter(file.read().split()))
+        file.close()
+        
+    # Remove the 300 mosot common out of the dictionary
+    for i,j in enumerate(dic.most_common()[0:300]):
+        if j[0] in indexedDictionary:
+            indexedDictionary.pop(j[0])
+
+    # set the representation vector len
+    global repVectorLen
+    repVectorLen = len(indexedDictionary)
+
+    # set index to each value
+    for i, item in enumerate(indexedDictionary):
+        indexedDictionary[item] = i
+
+    print("Remove300 most common was executed in ", time.clock()-startTime)
+    print(len(indexedDictionary), " features in the list")
+
+    return indexedDictionary
+
 # Temporarly Function - Create a feature vector from all the words in the corpus
 def GetIndexedDictionary(inputFolderPath):
     
@@ -71,14 +116,6 @@ def GetIndexedDictionary(inputFolderPath):
         dic.update(Counter(file.read().split()))
         file.close()
         
-    # Temp fast dictionary
-    #dic = {"good":0,"bad":1}
-    
-    # Remove the 300 mosot common out of the dictionary
-    if(bRemove300MostCommon == True):
-        for i,j in enumerate(dic.most_common()[0:300]):
-            dic.pop(j[0])
-
     # set the representation vector len
     global repVectorLen
     repVectorLen = len(dic)
@@ -330,6 +367,9 @@ executionMode,InputFilesFolder,TestsFilesFolder = GetCommandLineArguments()
 import UnitTests
 indexedFeaturesDic = UnitTests.TokenDiff(InputFilesFolder)
 repVectorLen = len(indexedFeaturesDic)
+
+if(bRemove300MostCommon == True):
+    indexedFeaturesDic = Remove300MostCommonWords(indexedFeaturesDic, InputFilesFolder)
 
 # create the train DB vectors
 TrainingVectorDb = CreateTrainingVectorDB(InputFilesFolder, indexedFeaturesDic)
