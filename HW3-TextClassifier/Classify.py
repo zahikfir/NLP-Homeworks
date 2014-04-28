@@ -8,7 +8,7 @@ import sys, os, time, codecs, math
 from collections import Counter
 
 # When true, the 300 most common tokens will be removed from the dicionary
-bRemove300MostCommon = True
+bRemove300MostCommon = False
 
 # global var which will hold the size of the representation vectors
 repVectorLen = 0
@@ -365,7 +365,7 @@ executionMode,InputFilesFolder,TestsFilesFolder = GetCommandLineArguments()
 # create the feature vector - For now from all the words in the text
 #indexedFeaturesDic = GetIndexedDictionary(InputFilesFolder)
 import UnitTests
-indexedFeaturesDic = UnitTests.TokenDiff(InputFilesFolder)
+indexedFeaturesDic = UnitTests.GetIndexedDictionary2(InputFilesFolder)
 repVectorLen = len(indexedFeaturesDic)
 
 if(bRemove300MostCommon == True):
