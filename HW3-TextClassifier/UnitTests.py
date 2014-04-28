@@ -196,7 +196,7 @@ def GetIndexedDictionary2(InputFolderPath):
     FeturesDic = Counter()
     itr = 0
 
-    WordsPath = os.path.join(InputFolderPath, "FeturesDicFile.txt")
+    WordsPath = os.path.join(InputFolderPath, "words.txt")
     file = codecs.open(WordsPath, "r", "utf-8")
     WordList = file.read().split()
     for word in WordList:
