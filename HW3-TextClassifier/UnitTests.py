@@ -183,5 +183,11 @@ def TokenDiff(inputFolderPath):
     # Set the global representation vector length  
     # TODO !!!
    
+    FeturesDicFile = codecs.open(os.path.join(inputFolderPath, "FeturesDicFile.txt"), "w", "utf-8")
+    for Key,Val in FeturesDic.items():
+        FeturesDicFile.writelines(Key)
+        FeturesDicFile.writelines(os.linesep)
+    FeturesDicFile.close()
+
     print("TokenDiff() Done in (sec):\t\t\t" ,time.clock() - TotalStartTime)
     return FeturesDic
