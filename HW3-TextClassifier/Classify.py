@@ -87,7 +87,7 @@ def Remove300MostCommonWords(indexedDictionary, inputFolderPath):
 
     return indexedDictionary
 
-# Temporarly Function - Create a feature vector from all the words in the corpus
+# Get an Indexed bag of words
 def GetIndexedDictionary(InputFolderPath):
     FeturesDic = Counter()
     itr = 0
