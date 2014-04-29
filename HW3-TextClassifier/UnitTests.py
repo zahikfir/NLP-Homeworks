@@ -115,50 +115,51 @@ def TokenDiff(inputFolderPath):
         OnlyNeg.append( (NegKey,NegVal,NegFileSpred[NegKey]) )
     print("Calc differences (sec):\t\t\t" ,time.clock() - StartTime)
     
-    StartTime = time.clock()
-    # Write the results into the files
-    OnlyPos.sort(key=operator.itemgetter(0))                  # Alphabetically sort
-    OnlyPos.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
-    OnlyPosFile = codecs.open(os.path.join(inputFolderPath, "OnlyPosFile.txt"), "w", "utf-8")
-    OnlyPosFile.writelines(("\t\t\t Total Positive reviews %d " + os.linesep) % (PosCount))
-    OnlyPosFile.writelines((("%15d\t %30s\t %d\t spred-%d\t " + os.linesep) % (idx + 1, val[0], val[1],val[2] ) for idx, val in enumerate(OnlyPos)))
-    OnlyPosFile.close()
+    #StartTime = time.clock()
+    ## Write the results into the files
+    #OnlyPos.sort(key=operator.itemgetter(0))                  # Alphabetically sort
+    #OnlyPos.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
+    #OnlyPosFile = codecs.open(os.path.join(inputFolderPath, "OnlyPosFile.txt"), "w", "utf-8")
+    #OnlyPosFile.writelines(("\t\t\t Total Positive reviews %d " + os.linesep) % (PosCount))
+    #OnlyPosFile.writelines((("%15d\t %30s\t %d\t spred-%d\t " + os.linesep) % (idx + 1, val[0], val[1],val[2] ) for idx, val in enumerate(OnlyPos)))
+    #OnlyPosFile.close()
 
-    OnlyPos.sort(key=operator.itemgetter(0))                  # Alphabetically sort
-    OnlyPos.sort(key=operator.itemgetter(2),reverse= True)    # Sort by count
-    OnlyPosFile = codecs.open(os.path.join(inputFolderPath, "OnlyPosFile_SortBySpred.txt"), "w", "utf-8")
-    OnlyPosFile.writelines(("\t\t\t Total Positive reviews %d " + os.linesep) % (PosCount))
-    OnlyPosFile.writelines((("%15d\t %30s\t %d\t spred-%d\t " + os.linesep) % (idx + 1, val[0], val[1],val[2] ) for idx, val in enumerate(OnlyPos)))
-    OnlyPosFile.close()
+    #OnlyPos.sort(key=operator.itemgetter(0))                  # Alphabetically sort
+    #OnlyPos.sort(key=operator.itemgetter(2),reverse= True)    # Sort by count
+    #OnlyPosFile = codecs.open(os.path.join(inputFolderPath, "OnlyPosFile_SortBySpred.txt"), "w", "utf-8")
+    #OnlyPosFile.writelines(("\t\t\t Total Positive reviews %d " + os.linesep) % (PosCount))
+    #OnlyPosFile.writelines((("%15d\t %30s\t %d\t spred-%d\t " + os.linesep) % (idx + 1, val[0], val[1],val[2] ) for idx, val in enumerate(OnlyPos)))
+    #OnlyPosFile.close()
 
-    OnlyNeg.sort(key=operator.itemgetter(0))                  # Alphabetically sort
-    OnlyNeg.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
-    OnlyNegFile = codecs.open(os.path.join(inputFolderPath, "OnlyNegFile.txt"), "w", "utf-8")
-    OnlyNegFile.writelines(("\t\t\t Total negative reviews %d " + os.linesep) % (NegCount))
-    OnlyNegFile.writelines((("%15d\t %30s\t %d\t spred-%d\t " + os.linesep) % (idx + 1, val[0], val[1],val[2] ) for idx, val in enumerate(OnlyNeg)))
-    OnlyNegFile.close()
+    #OnlyNeg.sort(key=operator.itemgetter(0))                  # Alphabetically sort
+    #OnlyNeg.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
+    #OnlyNegFile = codecs.open(os.path.join(inputFolderPath, "OnlyNegFile.txt"), "w", "utf-8")
+    #OnlyNegFile.writelines(("\t\t\t Total negative reviews %d " + os.linesep) % (NegCount))
+    #OnlyNegFile.writelines((("%15d\t %30s\t %d\t spred-%d\t " + os.linesep) % (idx + 1, val[0], val[1],val[2] ) for idx, val in enumerate(OnlyNeg)))
+    #OnlyNegFile.close()
 
-    OnlyNeg.sort(key=operator.itemgetter(0))                  # Alphabetically sort
-    OnlyNeg.sort(key=operator.itemgetter(2),reverse= True)    # Sort by count
-    OnlyNegFile = codecs.open(os.path.join(inputFolderPath, "OnlyNegFile_SortBySpred.txt"), "w", "utf-8")
-    OnlyNegFile.writelines(("\t\t\t Total negative reviews %d " + os.linesep) % (NegCount))
-    OnlyNegFile.writelines((("%15d\t %30s\t %d\t spred-%d\t " + os.linesep) % (idx + 1, val[0], val[1],val[2] ) for idx, val in enumerate(OnlyNeg)))
-    OnlyNegFile.close()
+    #OnlyNeg.sort(key=operator.itemgetter(0))                  # Alphabetically sort
+    #OnlyNeg.sort(key=operator.itemgetter(2),reverse= True)    # Sort by count
+    #OnlyNegFile = codecs.open(os.path.join(inputFolderPath, "OnlyNegFile_SortBySpred.txt"), "w", "utf-8")
+    #OnlyNegFile.writelines(("\t\t\t Total negative reviews %d " + os.linesep) % (NegCount))
+    #OnlyNegFile.writelines((("%15d\t %30s\t %d\t spred-%d\t " + os.linesep) % (idx + 1, val[0], val[1],val[2] ) for idx, val in enumerate(OnlyNeg)))
+    #OnlyNegFile.close()
 
-    InBoth.sort(key=operator.itemgetter(0))                  # Alphabetically sort
-    InBoth.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
-    InBothFile = codecs.open(os.path.join(inputFolderPath, "InBothFile.txt"), "w", "utf-8")
-    InBothFile.writelines(("\t\t\t Total Positive reviews %d " + os.linesep) % (PosCount))
-    InBothFile.writelines(("\t\t\t Total negative reviews %d " + os.linesep) % (NegCount))
-    InBothFile.writelines((("%15d\t %30s\t diff:%d\t pos:%d\t pospred:%d\t neg:%d\t negpred:%d\t" + os.linesep) % (idx+1,val[0],val[1],val[2],val[3],val[4],val[5]) for idx, val in enumerate(InBoth)))
-    InBothFile.close()
-    print("Write the files (sec):\t\t\t" ,time.clock() - StartTime)
+    #InBoth.sort(key=operator.itemgetter(0))                  # Alphabetically sort
+    #InBoth.sort(key=operator.itemgetter(1),reverse= True)    # Sort by count
+    #InBothFile = codecs.open(os.path.join(inputFolderPath, "InBothFile.txt"), "w", "utf-8")
+    #InBothFile.writelines(("\t\t\t Total Positive reviews %d " + os.linesep) % (PosCount))
+    #InBothFile.writelines(("\t\t\t Total negative reviews %d " + os.linesep) % (NegCount))
+    #InBothFile.writelines((("%15d\t %30s\t diff:%d\t pos:%d\t pospred:%d\t neg:%d\t negpred:%d\t" + os.linesep) % (idx+1,val[0],val[1],val[2],val[3],val[4],val[5]) for idx, val in enumerate(InBoth)))
+    #InBothFile.close()
+    #print("Write the files (sec):\t\t\t" ,time.clock() - StartTime)
 
     StartTime = time.clock()
     # Create Feture Dic
     FeturesDic = Counter()
     Iter = 0;
     
+    # Bag One
     for Token,Appearances,Spred in OnlyPos:
         if Spred >= 2:
             FeturesDic[Token] = Iter;
@@ -167,6 +168,8 @@ def TokenDiff(inputFolderPath):
         if Spred >= 2:
             FeturesDic[Token] = Iter;
             Iter = Iter + 1
+
+    # Bag two
     inBothList = []
     for Item in enumerate(InBoth):
         differenceRatio = max( (Item[1][4]/Item[1][2]) , (Item[1][2]/Item[1][4]) )
@@ -174,6 +177,18 @@ def TokenDiff(inputFolderPath):
     inBothList.sort(key=operator.itemgetter(0))
     inBothList.sort(key=operator.itemgetter(1),reverse= True)
     for item in inBothList:
+        if item[1] > 1:
+            FeturesDic[item[0]] = Iter;
+            Iter = Iter + 1
+
+    # Bag three
+    inBothSredList = []
+    for Item in enumerate(InBoth):
+        spredDifferenceRatio = max( (Item[1][5]/Item[1][3]) , (Item[1][3]/Item[1][5]) )
+        inBothSredList.append( (Item[1][0],spredDifferenceRatio) )
+    inBothSredList.sort(key=operator.itemgetter(0))
+    inBothSredList.sort(key=operator.itemgetter(1),reverse= True)
+    for item in inBothSredList[0:500]:
         if item[1] > 1:
             FeturesDic[item[0]] = Iter;
             Iter = Iter + 1
