@@ -88,47 +88,17 @@ def Remove300MostCommonWords(indexedDictionary, inputFolderPath):
     return indexedDictionary
 
 # Temporarly Function - Create a feature vector from all the words in the corpus
-def GetIndexedDictionary(inputFolderPath):
-    
-    startTime = time.clock()
+def GetIndexedDictionary(InputFolderPath):
+    FeturesDic = Counter()
+    itr = 0
 
-    dic = Counter()
-
-    # Get all the txt file paths from the positive folder
-    print("Creating dictionary (feature vector) from the positive reviews input folder")
-    posFolder = os.path.join(inputFolderPath, "pos")
-    txtFilesList = [ os.path.join(posFolder, f) for f in os.listdir(posFolder) if (os.path.isfile(os.path.join(posFolder, f)) & str(f).endswith(".txt"))]
-    
-    # update the dictionary with each review
-    for txtFile in txtFilesList:
-        file = codecs.open(txtFile,"r","utf-8")
-        dic.update(Counter(file.read().split()))
-        file.close()
-
-    # Get all the txt file paths from the positive folder
-    print("Updating the dictionary (feature vector) from the negative reviews input folder")
-    posFolder = os.path.join(inputFolderPath, "neg")
-    txtFilesList = [ os.path.join(posFolder, f) for f in os.listdir(posFolder) if (os.path.isfile(os.path.join(posFolder, f)) & str(f).endswith(".txt"))]
-    
-    # update the dictionary with each review
-    for txtFile in txtFilesList:
-        file = codecs.open(txtFile,"r","utf-8")
-        dic.update(Counter(file.read().split()))
-        file.close()
-        
-    # set the representation vector len
-    global repVectorLen
-    repVectorLen = len(dic)
-
-    # set index to each value
-    for i, item in enumerate(dic):
-        dic[item] = i
-
-    print("Get dictionary was executed in ", time.clock()-startTime)
-    print(len(dic), " features in the list")
-    
-    # return a key ordered dictionary
-    return dic
+    WordsPath = os.path.join(InputFolderPath, "words.txt")
+    file = codecs.open(WordsPath, "r", "utf-8")
+    WordList = file.read().split()
+    for word in WordList:
+        FeturesDic[word] = itr;
+        itr = itr + 1
+    return FeturesDic
 
 # create an empty representation vector
 def GetEmptyRepresentationVector():
@@ -362,10 +332,8 @@ StartTime = time.clock()
 # parse the command line arguments
 executionMode,InputFilesFolder,TestsFilesFolder = GetCommandLineArguments()
 
-# create the feature vector - For now from all the words in the text
-#indexedFeaturesDic = GetIndexedDictionary(InputFilesFolder)
-import UnitTests
-indexedFeaturesDic = UnitTests.GetIndexedDictionary2(InputFilesFolder)
+# read the feature vector from file
+indexedFeaturesDic = GetIndexedDictionary(InputFilesFolder)
 repVectorLen = len(indexedFeaturesDic)
 
 if(bRemove300MostCommon == True):
