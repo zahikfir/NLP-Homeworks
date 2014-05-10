@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "HW1-CorporaDrill", "CorporaDrill\HW1-CorporaDrill.pyproj", "{EBBF758F-35CB-40C8-B41D-A890749861BF}"
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "HW2-Collocations", "HW2-Collocations\HW2-Collocations.pyproj", "{B5380930-0943-4EA9-90E1-4A8D91981F86}"
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "HW3-TextClassifier", "HW3-TextClassifier\HW3-TextClassifier.pyproj", "{13B8BD06-6BEB-460A-BF9D-7264B65357D2}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "HW4-HMM", "HW4-HMM\HW4-HMM.pyproj", "{1C125018-2653-4987-8FED-A4C51945C1AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +27,10 @@ Global
 		{13B8BD06-6BEB-460A-BF9D-7264B65357D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13B8BD06-6BEB-460A-BF9D-7264B65357D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13B8BD06-6BEB-460A-BF9D-7264B65357D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C125018-2653-4987-8FED-A4C51945C1AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C125018-2653-4987-8FED-A4C51945C1AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C125018-2653-4987-8FED-A4C51945C1AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C125018-2653-4987-8FED-A4C51945C1AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
