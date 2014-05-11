@@ -4,7 +4,7 @@
 # Zahi Kfir             200681476
 #********************** NLP **********************#
 
-import sys, os, time, codecs, math
+import sys, os, time, codecs, math,re
 from collections import Counter
 
 
@@ -31,9 +31,57 @@ def GetCommandLineArguments():
 
     return executionMode,trainFilePath,evalOrTestFilePath
 
+# Parse the training file and returns a list of sentences, each sentence is a list of (word,POS)
+def ParseTrainingFile(trainFilePath):
+    returnVariable = []
+
+    trainFile = codecs.open(trainFilePath,"r","utf-8")              # Open the train file
+    trainSentences = re.split(".(?=\.|\?|\!)",trainFile.read())     # Split the train file into sentences
+
+    currentSentence = []
+
+    # Handle the first sentence
+    trainRows = trainSentences[0].split("\n")       # Split the first sentence into row (each row represent a word/token and its labels)
+    for row in trainRows:                           # For each row
+        columns = row.split("\t")                   # Split the row into columns (each column represent a word/token or a label)
+        if len(columns) >= 4:
+            currentSentence.append( (columns[1],columns[3]) )      # (columns[1] = token) , (columns[3] = POS)
+
+    # For each sentence (except the first)
+    for sentence in trainSentences[1:]:   
+        trainRows = sentence.split("\n")            # Split the sentence into row (each row represent a word/token and its labels)
+    
+        # The first row is the punctuation at the end of the last sentence
+        columns = trainRows[0].split("\t")          # Split the row into columns (each column represent a word/token or a label)
+        if len(columns) >= 4:
+              currentSentence.append( (columns[0],columns[2]) )    # (columns[0] = token) , (columns[2] = POS)
+        
+        returnVariable.append(currentSentence)      # Push current sentence
+        currentSentence = []                        # Reset current sentence
+
+        # For each row (except the first)
+        for row in trainRows[1:]:
+            columns = row.split("\t")               # Split the row into columns (each column represent a word/token or a label)
+            if len(columns) >= 4:
+              currentSentence.append( (columns[1],columns[3]) )    # (columns[1] = token) , (columns[3] = POS)
+    
+    returnVariable.append(currentSentence)          # push last sentence
+
+    return returnVariable 
+
 # Get Command Line Arguments
 executionMode,trainFilePath,evalOrTestFilePath = GetCommandLineArguments()
 
+StartTime = time.clock()
+trainFile = ParseTrainingFile(trainFilePath)
+print("ParseTrainingFile() (sec):\t\t\t" ,time.clock() - StartTime)
+
+outputFile = codecs.open("OutputFile.txt", "w", "utf-8")        # for debug only !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+for sentence in trainFile:
+    if len(sentence) >= 1:
+        for word in sentence:
+            outputFile.writelines(word[0]+ " ")
+        outputFile.write(os.linesep)
 
 print("\nHW4 - Hidden Markov model\n") 
 
