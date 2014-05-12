@@ -27,9 +27,10 @@ def GetCommandLineArguments():
     except:                                 # if one of the option parameters is missing
         sys.exit("\nWrong input. Please check your command line arguments \nTo run hmm.py in evaluation mode run: \n\t hmm.py -v --train TRAINING_FILE.txt --eval EVALUATION_FILE.txt \nTo run hmm.py in testing mode run: \n\t hmm.py -t --train TRAINING_FILE.txt --test TESTING_FILE.txt")
     
-    print('\nStart Program. \n\t Execution mode: {0} \n\t trainFilePath: {1} \n\t evalOrTestFilePath: {2}'.format(executionMode, trainFilePath, evalOrTestFilePath))
+    print('\nStart Program. \n\t Execution mode: {0} \n\t trainFilePath: {1} \n\t evalOrTestFilePath: {2}\n'.format(executionMode, trainFilePath, evalOrTestFilePath))
 
     return executionMode,trainFilePath,evalOrTestFilePath
+
 
 # Parse the training file and returns a list of sentences, each sentence is a list of (word,POS)
 def ParseTrainingFile(trainFilePath):
@@ -69,15 +70,49 @@ def ParseTrainingFile(trainFilePath):
 
     return returnVariable 
 
+
+# Replace all the tokens that appear once to uniformToken
+def BindAllSingleTokens(trainData,uniformToken):
+    
+    # Count token appearances
+    tokenDic = Counter()        
+    for sentence in trainData:
+        for word in sentence:
+            tokenDic.update( [word[0]] )
+    
+    # List all the tokens with single appearance
+    appearOnceList = []
+    for token,val in tokenDic.items():
+        if val == 1:
+            appearOnceList.append(token)
+
+    # Replace all the tokens that appear once
+    for i in range( len(trainData) ):
+        for j in range( len(trainData[i]) ):
+            if trainData[i][j][0] in appearOnceList:
+                trainData[i][j] = (uniformToken,trainData[i][j][1])
+
+    # Update tokenDic after the replacements
+    tokenDic[uniformToken] = len(appearOnceList)
+    for token in appearOnceList:
+        tokenDic.pop(token)
+
+    return trainData,tokenDic
+
+
 # Get Command Line Arguments
 executionMode,trainFilePath,evalOrTestFilePath = GetCommandLineArguments()
 
 StartTime = time.clock()
-trainFile = ParseTrainingFile(trainFilePath)
-print("ParseTrainingFile() (sec):\t\t\t" ,time.clock() - StartTime)
+trainData = ParseTrainingFile(trainFilePath)
+print("ParseTrainingFile() (sec):\t" ,time.clock() - StartTime)
+
+StartTime = time.clock()
+trainData,TokenDic = BindAllSingleTokens(trainData,"Kukiritza")
+print("BindAllSingleTokens()(sec):\t" ,time.clock() - StartTime)
 
 outputFile = codecs.open("OutputFile.txt", "w", "utf-8")        # for debug only !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-for sentence in trainFile:
+for sentence in trainData:
     if len(sentence) >= 1:
         for word in sentence:
             outputFile.writelines(word[0]+ " ")
