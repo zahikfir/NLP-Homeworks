@@ -81,11 +81,13 @@ def ParseTrainingFile(trainFilePath):
 def BindAllSingleTokens(trainData,uniformToken):
     
     # Count token appearances
-    tokenDic = Counter()        
+    tokenDic = Counter()
+    posDic = Counter()        
     for sentence in trainData:
         for word in sentence:
             tokenDic.update( [word[0]] )
-    
+            posDic.update( [word[1]] )
+
     # List all the tokens with single appearance
     appearOnceList = []
     for token,val in tokenDic.items():
@@ -103,7 +105,7 @@ def BindAllSingleTokens(trainData,uniformToken):
     for token in appearOnceList:
         tokenDic.pop(token)
 
-    return trainData,tokenDic
+    return trainData,tokenDic,posDic
 
 
 # Get Command Line Arguments
@@ -114,7 +116,7 @@ trainData = ParseTrainingFile(trainFilePath)
 print("ParseTrainingFile() (sec):\t" ,time.clock() - StartTime)
 
 StartTime = time.clock()
-trainData,TokenDic = BindAllSingleTokens(trainData,"Kukiritza")
+trainData,TokenDic,posDic = BindAllSingleTokens(trainData,"Kukiritza")
 print("BindAllSingleTokens()(sec):\t" ,time.clock() - StartTime)
 
 outputFile = codecs.open("OutputFile.txt", "w", "utf-8")        # for debug only !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
