@@ -68,6 +68,12 @@ def ParseTrainingFile(trainFilePath):
     
     returnVariable.append(currentSentence)          # push last sentence
 
+    # replace all empty POS with 'clitic'
+    for i in range( len(returnVariable) ):
+        for j in range( len(returnVariable[i]) ):
+            if returnVariable[i][j][1] == '':
+                returnVariable[i][j] = (returnVariable[i][j][0],'clitic')
+
     return returnVariable 
 
 
