@@ -108,6 +108,25 @@ def BindAllSingleTokens(trainData,uniformToken):
     return trainData,tokenDic,posDic
 
 
+# Calculate the probability that a sentence will start with a specific tag
+def CalculatePi(trainData):
+    
+    # Count tag appearances at the beginning of a sentence
+    openTagCounter = Counter()
+    for sentence in trainData:
+        firstWord = sentence[0]
+        openTagCounter.update( [firstWord[1]] )
+    
+    # Calculate pi for each tag
+    piDic = dict()
+    SentencesCount = len(trainData)
+    for tag,tagCount in openTagCounter.items():
+        piDic[tag] = tagCount / SentencesCount
+  
+    return piDic
+
+
+
 # Get Command Line Arguments
 executionMode,trainFilePath,evalOrTestFilePath = GetCommandLineArguments()
 
@@ -118,6 +137,14 @@ print("ParseTrainingFile() (sec):\t" ,time.clock() - StartTime)
 StartTime = time.clock()
 trainData,TokenDic,posDic = BindAllSingleTokens(trainData,"Kukiritza")
 print("BindAllSingleTokens()(sec):\t" ,time.clock() - StartTime)
+
+StartTime = time.clock()
+piDic = CalculatePi(trainData)
+print("CalculatePi()(sec):\t\t" ,time.clock() - StartTime)
+
+
+
+
 
 outputFile = codecs.open("OutputFile.txt", "w", "utf-8")        # for debug only !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 for sentence in trainData:
