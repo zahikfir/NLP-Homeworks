@@ -116,8 +116,9 @@ def CalculatePi(trainData):
     # Count tag appearances at the beginning of a sentence
     openTagCounter = Counter()
     for sentence in trainData:
-        firstWord = sentence[0]
-        openTagCounter.update( [firstWord[1]] )
+        if len(sentence) >= 1:
+            firstWord = sentence[0]
+            openTagCounter.update( [firstWord[1]] )
     
     # Calculate pi for each tag
     piDic = dict()
@@ -151,6 +152,7 @@ def ProbPrecedingTag(trainData,posDic):
             PrecedingTagProbDic[tag1][tag2] = PrecedingTagProbDic[tag1][tag2] / posDic[tag1]
                               
     return PrecedingTagProbDic;
+
 
 
 
