@@ -37,7 +37,7 @@ def ParseTrainingFile(trainFilePath):
     returnVariable = []
 
     trainFile = codecs.open(trainFilePath,"r","utf-8")              # Open the train file
-    trainSentences = re.split(".(?=\.|\?|\!)",trainFile.read())     # Split the train file into sentences
+    trainSentences = re.split(".(?=\.\t|\?\t|\!\t)",trainFile.read())     # Split the train file into sentences
 
     currentSentence = []
 
