@@ -130,31 +130,32 @@ def CalculatePi(trainData):
 
 
 # Calculate the probability of a tag given the previous tag 
-def ProbPrecedingTag(trainData,posDic):
+def TagTransitionProbabilities(trainData,posDic):
     
     # Create empty dictionary
-    PrecedingTagProbDic = dict()
+    tagTransitionProbDic = dict()
     for tag1 in posDic:
-        PrecedingTagProbDic[tag1] = dict()
+        tagTransitionProbDic[tag1] = dict()
         for tag2 in posDic:
-            PrecedingTagProbDic[tag1][tag2] = 0
+            tagTransitionProbDic[tag1][tag2] = 0
     
     # Update the dictionary with the counts
     for i in range( len(trainData) ):                       # loop all sentences in train data
         for j in range( len(trainData[i])-1 ):              # loop all words in sentence
             precedingTag = trainData[i][j][1]               # current word
             followingTag = trainData[i][j+1][1]             # next word
-            PrecedingTagProbDic[precedingTag][followingTag] = PrecedingTagProbDic[precedingTag][followingTag] + 1 
+            tagTransitionProbDic[precedingTag][followingTag] = tagTransitionProbDic[precedingTag][followingTag] + 1 
     
     # Update the dictionary with the probabilities
-    for tag1 in PrecedingTagProbDic:
-        for tag2 in PrecedingTagProbDic:
-            PrecedingTagProbDic[tag1][tag2] = PrecedingTagProbDic[tag1][tag2] / posDic[tag1]
+    for tag1 in tagTransitionProbDic:
+        for tag2 in tagTransitionProbDic:
+            tagTransitionProbDic[tag1][tag2] = tagTransitionProbDic[tag1][tag2] / posDic[tag1]
                               
-    return PrecedingTagProbDic;
+    return tagTransitionProbDic
 
 
 
+    
 
 
 
@@ -176,8 +177,8 @@ piDic = CalculatePi(trainData)
 print("CalculatePi()(sec):\t\t" ,time.clock() - StartTime)
 
 StartTime = time.clock()
-piDic = ProbPrecedingTag(trainData,posDic)
-print("ProbPrecedingTag()(sec):\t" ,time.clock() - StartTime)
+tagTransitionProbDic = TagTransitionProbabilities(trainData,posDic)
+print("TagTransitionProbabilities()(sec):\t" ,time.clock() - StartTime)
 
 
 
