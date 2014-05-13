@@ -129,7 +129,7 @@ def CalculatePi(trainData):
     return piDic
 
 
-# Calculate the probability of a tag given the previous tag 
+# Calculate the probability of a tag: given the previous tag
 def TagTransitionProbabilities(trainData,posDic):
     
     # Create empty dictionary
@@ -140,10 +140,10 @@ def TagTransitionProbabilities(trainData,posDic):
             tagTransitionProbDic[tag1][tag2] = 0
     
     # Update the dictionary with the counts
-    for i in range( len(trainData) ):                       # loop all sentences in train data
-        for j in range( len(trainData[i])-1 ):              # loop all words in sentence
-            precedingTag = trainData[i][j][1]               # current word
-            followingTag = trainData[i][j+1][1]             # next word
+    for i in range( len(trainData) ):               # loop all sentences in train data
+        for j in range( len(trainData[i])-1 ):      # loop all words in sentence
+            precedingTag = trainData[i][j][1]       # current word
+            followingTag = trainData[i][j+1][1]     # next word
             tagTransitionProbDic[precedingTag][followingTag] = tagTransitionProbDic[precedingTag][followingTag] + 1 
     
     # Update the dictionary with the probabilities
@@ -154,10 +154,31 @@ def TagTransitionProbabilities(trainData,posDic):
     return tagTransitionProbDic
 
 
+# Calculate the probability of a token: given it's tag
+def WordLikelihoodProbabilities(trainData,tokenDic,posDic):
+    
+    # Create empty dictionary
+    wordLikelihoodProbDic = dict()
+    for tag in posDic:
+        wordLikelihoodProbDic[tag] = dict()
+        for token in tokenDic:
+            wordLikelihoodProbDic[tag][token] = 0
+    
+    # Update the dictionary with the counts
+    for i in range( len(trainData) ):               # loop all sentences in train data
+        for j in range( len(trainData[i]) ):        # loop all words in sentence
+            currentToken = trainData[i][j][0]
+            currentTag = trainData[i][j][1]
+            wordLikelihoodProbDic[currentTag][currentToken] = wordLikelihoodProbDic[currentTag][currentToken]+ 1
+
+    # Update the dictionary with the probabilities
+    for tag in posDic:
+        for token in tokenDic:
+            wordLikelihoodProbDic[tag][token] = wordLikelihoodProbDic[tag][token] / posDic[tag]
+
+    return wordLikelihoodProbDic
 
     
-
-
 
 
 
@@ -166,20 +187,23 @@ executionMode,trainFilePath,evalOrTestFilePath = GetCommandLineArguments()
 
 StartTime = time.clock()
 trainData = ParseTrainingFile(trainFilePath)
-print("ParseTrainingFile() (sec):\t" ,time.clock() - StartTime)
+print("ParseTrainingFile() (sec):\t\t" ,time.clock() - StartTime)
 
 StartTime = time.clock()
-trainData,TokenDic,posDic = BindAllSingleTokens(trainData,"Kukiritza")
-print("BindAllSingleTokens()(sec):\t" ,time.clock() - StartTime)
+trainData,tokenDic,posDic = BindAllSingleTokens(trainData,"Kukiritza")
+print("BindAllSingleTokens()(sec):\t\t" ,time.clock() - StartTime)
 
 StartTime = time.clock()
 piDic = CalculatePi(trainData)
-print("CalculatePi()(sec):\t\t" ,time.clock() - StartTime)
+print("CalculatePi()(sec):\t\t\t" ,time.clock() - StartTime)
 
 StartTime = time.clock()
 tagTransitionProbDic = TagTransitionProbabilities(trainData,posDic)
 print("TagTransitionProbabilities()(sec):\t" ,time.clock() - StartTime)
 
+StartTime = time.clock()
+wordLikelihoodProbDic = WordLikelihoodProbabilities(trainData,tokenDic,posDic)
+print("WordLikelihoodProbabilities()(sec):\t" ,time.clock() - StartTime)
 
 
 
