@@ -184,6 +184,66 @@ def WordLikelihoodProbabilities(trainData,tokenDic,tagDic):
     return wordLikelihoodProbDic
 
 
+# Viterby algorithm 
+def RunViterbyAlg(sentence,tokenDic,tagDic,piDic,tagTransitionProbDic,wordLikelihoodProbDic):
+    
+    # Initiate empty matrix
+    emptyProb = 0
+    emptyBacktrace = 'emptyTag'
+    sentenceLen = len(sentence)
+    viterbyMatrix = []
+    for i in range(sentenceLen):
+        viterbyMatrix.append(dict())
+        for tag in tagDic:
+            viterbyMatrix[i][tag] = (emptyProb,emptyBacktrace)
+
+    # Calculate time 0 (first token)
+    for tag in tagDic:
+        piProb = piDic[tag]
+        if sentence[0] in tokenDic:
+            wordLikelihoodProb = wordLikelihoodProbDic[tag][sentence[0]]
+        else:
+            wordLikelihoodProb = wordLikelihoodProbDic[tag]["Kukiritza"]
+        viterbyMatrix[0][tag] = ( piProb * wordLikelihoodProb , tag )
+
+    # Fill in the matrix 
+    for i in range(1,sentenceLen):                      # for each time
+        for tag in tagDic:                              # go over all tags
+            viterbyMatrix[i][tag] = (-100,'emptyTag')   # init prob
+            
+            # calc word Likelihood Probability
+            if sentence[i] in tokenDic:
+                wordLikelihoodProb = wordLikelihoodProbDic[tag][sentence[i]]
+            else:
+                wordLikelihoodProb = wordLikelihoodProbDic[tag]["Kukiritza"]
+            
+            # go over all tag in previous time
+            for previousTag in tagDic:
+                previousTagProb = viterbyMatrix[i-1][previousTag][0]            # the probability og the tag in previous time 
+                transitionProb = tagTransitionProbDic[previousTag][tag]         # transition probabilty from previous tag to current tag
+                prob = previousTagProb * transitionProb * wordLikelihoodProb    # current probabilty using specific previous tag 
+                if prob > viterbyMatrix[i][tag][0]:
+                    viterbyMatrix[i][tag] = (prob,previousTag)                  # save the max prob
+    
+    # find the max tag prob in the last column of the viterby matrix
+    maxProb = -1
+    maxTag = 'emptyTag'               
+    for tag in tagDic:
+        currentProb = viterbyMatrix[sentenceLen-1][tag][0]
+        if currentProb > maxProb:
+            maxProb = currentProb
+            maxTag = tag           
+
+    # append the tags using backtrace 
+    tags = []
+    tags.append(maxTag)
+    for i in range(sentenceLen-1,0,-1):
+        maxTag = viterbyMatrix[i][maxTag][1]
+        tags.append(maxTag)
+    tags.reverse()      # appended backwards (last tag first)
+                      
+    return tags
+    
 
 
 
@@ -210,7 +270,10 @@ StartTime = time.clock()
 wordLikelihoodProbDic = WordLikelihoodProbabilities(trainData,tokenDic,tagDic)
 print("WordLikelihoodProbabilities()(sec):\t" ,time.clock() - StartTime)
 
-
+sentence = ['zk1','zk2','zk3','zk4']
+StartTime = time.clock()
+tags = RunViterbyAlg(sentence,tokenDic,tagDic,piDic,tagTransitionProbDic,wordLikelihoodProbDic)
+print("RunViterbyAlg()(sec):\t" ,time.clock() - StartTime)
 
 
 outputFile = codecs.open("OutputFile.txt", "w", "utf-8")        # for debug only !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
