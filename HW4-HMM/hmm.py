@@ -111,7 +111,7 @@ def BindAllSingleTokens(trainData,uniformToken):
 
 
 # Calculate the probability that a sentence will start with a specific tag
-def CalculatePi(trainData):
+def CalculatePi(trainData,tagDic):
     
     # Count tag appearances at the beginning of a sentence
     openTagCounter = Counter()
@@ -126,6 +126,11 @@ def CalculatePi(trainData):
     for tag,tagCount in openTagCounter.items():
         piDic[tag] = tagCount / SentencesCount
   
+    # Init all the tags that never starts a sentence
+    for tag in tagDic:
+        if not (tag in piDic):
+            piDic[tag] = 0
+
     return piDic
 
 
@@ -179,7 +184,6 @@ def WordLikelihoodProbabilities(trainData,tokenDic,tagDic):
     return wordLikelihoodProbDic
 
 
-    
 
 
 
@@ -195,7 +199,7 @@ trainData,tokenDic,tagDic = BindAllSingleTokens(trainData,"Kukiritza")
 print("BindAllSingleTokens()(sec):\t\t" ,time.clock() - StartTime)
 
 StartTime = time.clock()
-piDic = CalculatePi(trainData)
+piDic = CalculatePi(trainData,tagDic)
 print("CalculatePi()(sec):\t\t\t" ,time.clock() - StartTime)
 
 StartTime = time.clock()
