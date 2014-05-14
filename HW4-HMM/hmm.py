@@ -34,10 +34,10 @@ def GetCommandLineArguments():
 
 # Parse the training file and returns a list of sentences, each sentence is a list of (word,POS)
 def ParseTrainingFile(trainFilePath):
-    returnVariable = []
+    trainData = []
 
-    trainFile = codecs.open(trainFilePath,"r","utf-8")              # Open the train file
-    trainSentences = re.split(".(?=\.\t|\?\t|\!\t)",trainFile.read())     # Split the train file into sentences
+    trainFile = codecs.open(trainFilePath,"r","utf-8")                  # Open the train file
+    trainSentences = re.split(".(?=\.\t|\?\t|\!\t)",trainFile.read())   # Split the train file into sentences
 
     currentSentence = []
 
@@ -57,7 +57,7 @@ def ParseTrainingFile(trainFilePath):
         if len(columns) >= 4:
               currentSentence.append( (columns[0],columns[2]) )    # (columns[0] = token) , (columns[2] = POS)
         
-        returnVariable.append(currentSentence)      # Push current sentence
+        trainData.append(currentSentence)           # Push current sentence
         currentSentence = []                        # Reset current sentence
 
         # For each row (except the first)
@@ -66,15 +66,15 @@ def ParseTrainingFile(trainFilePath):
             if len(columns) >= 4:
               currentSentence.append( (columns[1],columns[3]) )    # (columns[1] = token) , (columns[3] = POS)
     
-    returnVariable.append(currentSentence)          # push last sentence
+    trainData.append(currentSentence)          # push last sentence
 
     # replace all empty POS with 'clitic'
-    for i in range( len(returnVariable) ):
-        for j in range( len(returnVariable[i]) ):
-            if returnVariable[i][j][1] == '':
-                returnVariable[i][j] = (returnVariable[i][j][0],'clitic')
+    for i in range( len(trainData) ):
+        for j in range( len(trainData[i]) ):
+            if trainData[i][j][1] == '':
+                trainData[i][j] = (trainData[i][j][0],'clitic')
 
-    return returnVariable 
+    return trainData 
 
 
 # Replace all the tokens that appear once to uniformToken
