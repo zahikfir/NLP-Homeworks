@@ -273,7 +273,7 @@ print("WordLikelihoodProbabilities()(sec):\t" ,time.clock() - StartTime)
 sentence = ['zk1','zk2','zk3','zk4']
 StartTime = time.clock()
 tags = RunViterbyAlg(sentence,tokenDic,tagDic,piDic,tagTransitionProbDic,wordLikelihoodProbDic)
-print("RunViterbyAlg()(sec):\t" ,time.clock() - StartTime)
+print("RunViterbyAlg()(sec):\t\t\t" ,time.clock() - StartTime)
 
 
 outputFile = codecs.open("OutputFile.txt", "w", "utf-8")        # for debug only !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
