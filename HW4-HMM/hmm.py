@@ -33,6 +33,14 @@ def GetCommandLineArguments():
 
 
 # Parse the training file and returns a list of sentences, each sentence is a list of (word,POS)
+# Returns trainData: list of sentences, each sentence is a list of word, each word is (Token,POS-tag)
+#
+#                    [----------------------------------------------trainData-----------------------------------------------]
+#                    [  [sentence-1][sentence-2]...[ (word-1,POS-Tag)(word-2,POS-Tag)...(word-n,POS-Tag)  ]...[sentence-n]  ]
+#                                                  [--------------------- sentence k ---------------------]
+#
+#e.g.  trainData[5][4][0] - the token in sentence 5 word 4
+#      trainData[5][4][1] - the tag of the in sentence 5 word 4  
 def ParseTrainingFile(trainFilePath):
     trainData = []
 
@@ -78,8 +86,10 @@ def ParseTrainingFile(trainFilePath):
 
 
 # Replace all the tokens that appear once to uniformToken
-# Return tokenDic - all tokens and their count
+# Return tokenDic - all tokens and their count   
+#                   e.g. tokenDic['Dog'] = 5        => there are 5 appearances of the token 'Dog' in the training corpus
 # Return tagDic - all pos tags and their count
+#                   e.g. tagDic['adverb'] = 5       => there are 5 appearances of the tag 'adverb' in the training corpus
 def BindAllSingleTokens(trainData,uniformToken):
     
     # Count token appearances
