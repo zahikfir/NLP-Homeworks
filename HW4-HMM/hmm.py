@@ -35,12 +35,12 @@ def GetCommandLineArguments():
 # Parse the training file and returns a list of sentences, each sentence is a list of (word,POS)
 # Returns trainData: list of sentences, each sentence is a list of word, each word is (Token,POS-tag)
 #
-#                    [----------------------------------------------trainData-----------------------------------------------]
-#                    [  [sentence-1][sentence-2]...[ (word-1,POS-Tag)(word-2,POS-Tag)...(word-n,POS-Tag)  ]...[sentence-n]  ]
-#                                                  [--------------------- sentence k ---------------------]
+# [--------------------------------------- trainData ---------------------------------------]
+# [ [sentence-1]...[ (word-1,POS-Tag)(word-2,POS-Tag)...(word-n,POS-Tag)  ]...[sentence-n]  ]
+#                  [--------------------- sentence k ---------------------]
 #
-#e.g.  trainData[5][4][0] - the token in sentence 5 word 4
-#      trainData[5][4][1] - the tag of the in sentence 5 word 4  
+#       e.g. trainData[5][4][0] - the token in sentence 5 word 4
+#            trainData[5][4][1] - the tag of the in sentence 5 word 4  
 def ParseTrainingFile(trainFilePath):
     trainData = []
 
@@ -86,10 +86,10 @@ def ParseTrainingFile(trainFilePath):
 
 
 # Replace all the tokens that appear once to uniformToken
-# Return tokenDic - all tokens and their count   
-#                   e.g. tokenDic['Dog'] = 5        => there are 5 appearances of the token 'Dog' in the training corpus
-# Return tagDic - all pos tags and their count
-#                   e.g. tagDic['adverb'] = 5       => there are 5 appearances of the tag 'adverb' in the training corpus
+# Return tokenDic: a dictionary, were the keys are tokens and the values are number of appearances
+#   e.g. tokenDic['Dog'] = 5 -> there are 5 appearances of the token 'Dog' in the training corpus
+# Return tagDic - a dictionary, were the keys are POS/tags and the values are number of appearances
+#   e.g. tagDic['adverb'] = 5 -> there are 5 appearances of the tag 'adverb' in the training corpus
 def BindAllSingleTokens(trainData,uniformToken):
     
     # Count token appearances
@@ -121,6 +121,9 @@ def BindAllSingleTokens(trainData,uniformToken):
 
 
 # Calculate the probability that a sentence will start with a specific tag
+# returns piDic: dictionary, keys are tags, values are the probability that a sentence will start with this tag
+#   e.g. piDic['adverb'] = 0.5 -> half of the sentences starts with the tag 'adverb'               
+#                             -> the probability that a sentence will start with a 'adverb' is 0.5
 def CalculatePi(trainData,tagDic):
     
     # Count tag appearances at the beginning of a sentence
@@ -145,6 +148,11 @@ def CalculatePi(trainData,tagDic):
 
 
 # Calculate the probability of a tag: given the previous tag
+# returns tagTransitionProbDic: a dictionary were the key are preceding Tag, 
+#           values are dictionary were the keys are following Tag and the values are Transition Probability
+#   e.g. tagTransitionProbDic['adverb']['noun'] = 0.5 
+#                   -> half of the tags that comes after 'adverb' are 'noun'
+#                   -> the probability of a tag 'noun' given the previous tag was 'adverb' is 0.5
 def TagTransitionProbabilities(trainData,tagDic):
     
     # Create empty dictionary
@@ -170,6 +178,10 @@ def TagTransitionProbabilities(trainData,tagDic):
 
 
 # Calculate the probability of a token: given it's tag
+# returns wordLikelihoodProbDic: a dictionary were the key are preceding Tag, values are also a dictionary
+#            were the keys are tokens and the values are Probability of the token given the tag
+#   e.g. wordLikelihoodProbDic['adverb']['dog'] = 0.3
+#                   -> the probability of a token 'dog' given it's taged 'adverb' is 0.3       
 def WordLikelihoodProbabilities(trainData,tokenDic,tagDic):
     
     # Create empty dictionary
@@ -195,6 +207,10 @@ def WordLikelihoodProbabilities(trainData,tokenDic,tagDic):
 
 
 # Viterby algorithm 
+# return tags - a list of tags, as the size of the input sentence 
+#               the tag of the i word in the sentence is the i elemnet in tags
+#   e.g. tags[0] = 'adverb' -> the tag of the first word is adverb
+#        tags[4] = 'noun' -> the tag of the fifth token is noun  
 def RunViterbyAlg(sentence,tokenDic,tagDic,piDic,tagTransitionProbDic,wordLikelihoodProbDic):
     
     # Initiate empty matrix
