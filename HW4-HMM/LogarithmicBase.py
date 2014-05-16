@@ -203,3 +203,49 @@ def LogarithmicBase_EvaluateMarkovModel(evaluationData,markovModel):
            
     modelAccuracy = successCount / (successCount+failureCount)
     return modelAccuracy 
+
+
+
+
+
+# *********************************************************************************************************************************
+# *********************************************************************************************************************************
+#                   Testing          Testing              Testing          Testing             Testing          Testing
+# *********************************************************************************************************************************
+# *********************************************************************************************************************************
+
+#import LogarithmicBase
+
+#StartTime = time.clock()
+#piDic = LogarithmicBase.LogarithmicBase_CalculatePi(trainData,tagDic)
+#print("LogarithmicBase_CalculatePi() (sec):\t\t\t" ,time.clock() - StartTime)
+
+#StartTime = time.clock()
+#tagTransitionProbDic = LogarithmicBase.LogarithmicBase_TagTransitionProbabilities(trainData,tagDic)
+#print("LogarithmicBase_TagTransitionProbabilities() (sec):\t" ,time.clock() - StartTime)
+
+#StartTime = time.clock()
+#wordLikelihoodProbDic = LogarithmicBase.LogarithmicBase_WordLikelihoodProbabilities(trainData,tokenDic,tagDic)
+#print("LogarithmicBase_WordLikelihoodProbabilities() (sec):\t" ,time.clock() - StartTime)
+
+#markovModel = (tokenDic,tagDic,piDic,tagTransitionProbDic,wordLikelihoodProbDic)
+
+#if (executionMode == '-v'):
+    
+#    StartTime = time.clock()
+#    evaluationData = ParseTaggedFile(evalOrTestFilePath)
+#    print("ParseTaggedFile(evaluationFile) (sec):\t\t\t" ,time.clock() - StartTime)
+
+#    StartTime = time.clock()
+#    modelAccuracy = LogarithmicBase.LogarithmicBase_EvaluateMarkovModel(evaluationData,markovModel)
+#    print("LogarithmicBase_EvaluateMarkovModel() (sec):\t\t" ,time.clock() - StartTime)
+
+#    print("\nLogarithmic-base model Accuracy is: ",modelAccuracy,"%\n")
+
+#elif(executionMode == '-t'):
+#    print('testing mode')
+#else:
+#    sys.exit("\nWrong input. Please check your command line arguments \nTo run hmm.py in evaluation mode run: \n\t hmm.py -v --train TRAINING_FILE.txt --eval EVALUATION_FILE.txt \nTo run hmm.py in testing mode run: \n\t hmm.py -t --train TRAINING_FILE.txt --test TESTING_FILE.txt")
+#sys.stdin.read(1)
+
+
