@@ -41,7 +41,7 @@ def GetCommandLineArguments():
 #
 #       e.g. trainData[5][4][0] - the token in sentence 5 word 4
 #            trainData[5][4][1] - the tag of the in sentence 5 word 4  
-def ParseTrainingFile(trainFilePath):
+def ParseTagedFile(trainFilePath):
     trainData = []
 
     trainFile = codecs.open(trainFilePath,"r","utf-8")                  # Open the train file
@@ -277,29 +277,37 @@ def RunViterbyAlg(sentence,tokenDic,tagDic,piDic,tagTransitionProbDic,wordLikeli
 executionMode,trainFilePath,evalOrTestFilePath = GetCommandLineArguments()
 
 StartTime = time.clock()
-trainData = ParseTrainingFile(trainFilePath)
-print("ParseTrainingFile() (sec):\t\t" ,time.clock() - StartTime)
+trainData = ParseTagedFile(trainFilePath)
+print("ParseTagedFile(trainingFile) (sec):\t" ,time.clock() - StartTime)
 
 StartTime = time.clock()
 trainData,tokenDic,tagDic = BindAllSingleTokens(trainData,"Kukiritza")
-print("BindAllSingleTokens()(sec):\t\t" ,time.clock() - StartTime)
+print("BindAllSingleTokens() (sec):\t\t" ,time.clock() - StartTime)
 
 StartTime = time.clock()
 piDic = CalculatePi(trainData,tagDic)
-print("CalculatePi()(sec):\t\t\t" ,time.clock() - StartTime)
+print("CalculatePi() (sec):\t\t\t" ,time.clock() - StartTime)
 
 StartTime = time.clock()
 tagTransitionProbDic = TagTransitionProbabilities(trainData,tagDic)
-print("TagTransitionProbabilities()(sec):\t" ,time.clock() - StartTime)
+print("TagTransitionProbabilities() (sec):\t" ,time.clock() - StartTime)
 
 StartTime = time.clock()
 wordLikelihoodProbDic = WordLikelihoodProbabilities(trainData,tokenDic,tagDic)
-print("WordLikelihoodProbabilities()(sec):\t" ,time.clock() - StartTime)
+print("WordLikelihoodProbabilities() (sec):\t" ,time.clock() - StartTime)
 
 sentence = ['zk1','zk2','zk3','zk4']
 StartTime = time.clock()
 tags = RunViterbyAlg(sentence,tokenDic,tagDic,piDic,tagTransitionProbDic,wordLikelihoodProbDic)
-print("RunViterbyAlg()(sec):\t\t\t" ,time.clock() - StartTime)
+print("RunViterbyAlg() (sec):\t\t\t" ,time.clock() - StartTime)
+
+
+
+
+
+
+
+
 
 
 outputFile = codecs.open("OutputFile.txt", "w", "utf-8")        # for debug only !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
