@@ -279,12 +279,37 @@ def RunViterbyAlg(sentence,markovModel):
     return tags
     
 
+# evaluate the markov model using the Viterby algorithm
+def EvaluateMarkovModel(evaluationData,markovModel):
+    
+    # extract token list and tag list from the evaluation file
+    EvaluationData_Tokens = []
+    EvaluationData_Tags = []
+    for taggedSentence in  evaluationData:
+        tokens = []
+        taggs = [] 
+        for word in taggedSentence:
+            tokens.append(word[0])
+            taggs.append(word[1])
+        EvaluationData_Tokens.append(tokens)
+        EvaluationData_Tags.append(taggs)
 
-
-
-
-
-
+    # count success/failure in tagging the tokens
+    successCount = 0
+    failureCount = 0
+    for i in range( len(EvaluationData_Tokens) ):
+        sentence = EvaluationData_Tokens[i]                 # list of tokens
+        knownTags = EvaluationData_Tags[i]                  # list on known tags
+        assumeTags = RunViterbyAlg(sentence,markovModel)    # list of assume tags
+        
+        for i in range( len(knownTags) ):
+            if knownTags[i] == assumeTags[i]:
+                successCount = successCount + 1             
+            else:
+                failureCount = failureCount + 1 
+           
+    modelAccuracy = successCount / (successCount+failureCount)
+    return modelAccuracy 
 
 
 # Get Command Line Arguments
@@ -318,6 +343,22 @@ tags = RunViterbyAlg(sentence,markovModel)
 print("RunViterbyAlg() (sec):\t\t\t" ,time.clock() - StartTime)
 
 
+if (executionMode == '-v'):
+    
+    StartTime = time.clock()
+    evaluationData = ParseTaggedFile(evalOrTestFilePath)
+    print("ParseTaggedFile(evaluationFile) (sec):\t" ,time.clock() - StartTime)
+
+    StartTime = time.clock()
+    modelAccuracy = EvaluateMarkovModel(evaluationData,markovModel)
+    print("EvaluateMarkovModel() (sec):\t\t" ,time.clock() - StartTime)
+
+    print("\nmodel Accuracy is: ",modelAccuracy,"%\n")
+
+elif(executionMode == '-t'):
+    print('testing mode')
+else:
+    sys.exit("\nWrong input. Please check your command line arguments \nTo run hmm.py in evaluation mode run: \n\t hmm.py -v --train TRAINING_FILE.txt --eval EVALUATION_FILE.txt \nTo run hmm.py in testing mode run: \n\t hmm.py -t --train TRAINING_FILE.txt --test TESTING_FILE.txt")
 
 
 
