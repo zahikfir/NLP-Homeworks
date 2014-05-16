@@ -18,12 +18,15 @@ def LogarithmicBase_CalculatePi(trainData,tagDic):
     piDic = dict()
     SentencesCount = len(trainData)
     for tag,tagCount in openTagCounter.items():
-        piDic[tag] = tagCount / SentencesCount
+        if (tagCount / SentencesCount) == 0:
+            piDic[tag] = math.log(1e-50)
+        else:
+            piDic[tag] = math.log(tagCount / SentencesCount)
   
     # Init all the tags that never starts a sentence
     for tag in tagDic:
         if not (tag in piDic):
-            piDic[tag] = 0
+            piDic[tag] = math.log(1e-50)
 
     return piDic
 
@@ -53,7 +56,11 @@ def LogarithmicBase_TagTransitionProbabilities(trainData,tagDic):
     # Update the dictionary with the probabilities
     for tag1 in tagTransitionProbDic:
         for tag2 in tagTransitionProbDic:
-            tagTransitionProbDic[tag1][tag2] = tagTransitionProbDic[tag1][tag2] / tagDic[tag1]
+            if (tagTransitionProbDic[tag1][tag2] / tagDic[tag1]) == 0:
+                tagTransitionProbDic[tag1][tag2] = math.log(1e-50)
+            else:
+                tagTransitionProbDic[tag1][tag2] = math.log(tagTransitionProbDic[tag1][tag2] / tagDic[tag1])
+            
                               
     return tagTransitionProbDic
 
@@ -82,8 +89,11 @@ def LogarithmicBase_WordLikelihoodProbabilities(trainData,tokenDic,tagDic):
     # Update the dictionary with the probabilities
     for tag in tagDic:
         for token in tokenDic:
-            wordLikelihoodProbDic[tag][token] = wordLikelihoodProbDic[tag][token] / tagDic[tag]
-
+            if (wordLikelihoodProbDic[tag][token] / tagDic[tag]) == 0:
+                wordLikelihoodProbDic[tag][token] = math.log(1e-50)
+            else:
+                wordLikelihoodProbDic[tag][token] = math.log(wordLikelihoodProbDic[tag][token] / tagDic[tag])
+            
     return wordLikelihoodProbDic
 
 
@@ -121,12 +131,12 @@ def LogarithmicBase_RunViterbyAlg(sentence,markovModel):
             wordLikelihoodProb = wordLikelihoodProbDic[tag][sentence[0]]
         else:
             wordLikelihoodProb = wordLikelihoodProbDic[tag]["Kukiritza"]
-        viterbyMatrix[0][tag] = ( piProb * wordLikelihoodProb , tag )
+        viterbyMatrix[0][tag] = ( piProb + wordLikelihoodProb , tag )
 
     # Fill in the matrix 
     for i in range(1,sentenceLen):                      # for each time
         for tag in tagDic:                              # go over all tags
-            viterbyMatrix[i][tag] = (-100,'emptyTag')   # init prob
+            viterbyMatrix[i][tag] = (-1e1000,'emptyTag')   # init prob
             
             # calc word Likelihood Probability
             if sentence[i] in tokenDic:
@@ -138,18 +148,18 @@ def LogarithmicBase_RunViterbyAlg(sentence,markovModel):
             for previousTag in tagDic:
                 previousTagProb = viterbyMatrix[i-1][previousTag][0]            # the probability og the tag in previous time 
                 transitionProb = tagTransitionProbDic[previousTag][tag]         # transition probabilty from previous tag to current tag
-                prob = previousTagProb * transitionProb * wordLikelihoodProb    # current probabilty using specific previous tag 
+                prob = previousTagProb + transitionProb + wordLikelihoodProb    # current probabilty using specific previous tag 
                 if prob > viterbyMatrix[i][tag][0]:
                     viterbyMatrix[i][tag] = (prob,previousTag)                  # save the max prob
     
     # find the max tag prob in the last column of the viterby matrix
-    maxProb = -1
+    maxProb = -1e1000
     maxTag = 'emptyTag'               
     for tag in tagDic:
         currentProb = viterbyMatrix[sentenceLen-1][tag][0]
         if currentProb > maxProb:
             maxProb = currentProb
-            maxTag = tag           
+            maxTag = tag
 
     # append the tags using backtrace 
     tags = []
@@ -160,3 +170,36 @@ def LogarithmicBase_RunViterbyAlg(sentence,markovModel):
     tags.reverse()      # appended backwards (last tag first)
                       
     return tags
+
+
+# evaluate the markov model using the Viterby algorithm
+def LogarithmicBase_EvaluateMarkovModel(evaluationData,markovModel):
+    
+    # extract token list and tag list from the evaluation file
+    EvaluationData_Tokens = []
+    EvaluationData_Tags = []
+    for taggedSentence in  evaluationData:
+        tokens = []
+        taggs = [] 
+        for word in taggedSentence:
+            tokens.append(word[0])
+            taggs.append(word[1])
+        EvaluationData_Tokens.append(tokens)
+        EvaluationData_Tags.append(taggs)
+
+    # count success/failure in tagging the tokens
+    successCount = 0
+    failureCount = 0
+    for i in range( len(EvaluationData_Tokens) ):
+        sentence = EvaluationData_Tokens[i]                 # list of tokens
+        knownTags = EvaluationData_Tags[i]                  # list on known tags
+        assumeTags = LogarithmicBase_RunViterbyAlg(sentence,markovModel)    # list of assume tags
+        
+        for i in range( len(knownTags) ):
+            if knownTags[i] == assumeTags[i]:
+                successCount = successCount + 1             
+            else:
+                failureCount = failureCount + 1 
+           
+    modelAccuracy = successCount / (successCount+failureCount)
+    return modelAccuracy 
