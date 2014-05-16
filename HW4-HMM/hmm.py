@@ -41,7 +41,7 @@ def GetCommandLineArguments():
 #
 #       e.g. trainData[5][4][0] - the token in sentence 5 word 4
 #            trainData[5][4][1] - the tag of the in sentence 5 word 4  
-def ParseTagedFile(trainFilePath):
+def ParseTaggedFile(trainFilePath):
     trainData = []
 
     trainFile = codecs.open(trainFilePath,"r","utf-8")                  # Open the train file
@@ -181,7 +181,7 @@ def TagTransitionProbabilities(trainData,tagDic):
 # returns wordLikelihoodProbDic: a dictionary were the key are preceding Tag, values are also a dictionary
 #            were the keys are tokens and the values are Probability of the token given the tag
 #   e.g. wordLikelihoodProbDic['adverb']['dog'] = 0.3
-#                   -> the probability of a token 'dog' given it's taged 'adverb' is 0.3       
+#                   -> the probability of a token 'dog' given it's tagged 'adverb' is 0.3       
 def WordLikelihoodProbabilities(trainData,tokenDic,tagDic):
     
     # Create empty dictionary
@@ -281,12 +281,18 @@ def RunViterbyAlg(sentence,markovModel):
 
 
 
+
+
+
+
+
+
 # Get Command Line Arguments
 executionMode,trainFilePath,evalOrTestFilePath = GetCommandLineArguments()
 
 StartTime = time.clock()
-trainData = ParseTagedFile(trainFilePath)
-print("ParseTagedFile(trainingFile) (sec):\t" ,time.clock() - StartTime)
+trainData = ParseTaggedFile(trainFilePath)
+print("ParseTaggedFile(trainingFile) (sec):\t" ,time.clock() - StartTime)
 
 StartTime = time.clock()
 trainData,tokenDic,tagDic = BindAllSingleTokens(trainData,"Kukiritza")
@@ -310,7 +316,6 @@ sentence = ['zk1','zk2','zk3','zk4']
 StartTime = time.clock()
 tags = RunViterbyAlg(sentence,markovModel)
 print("RunViterbyAlg() (sec):\t\t\t" ,time.clock() - StartTime)
-
 
 
 
