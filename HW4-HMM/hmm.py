@@ -207,15 +207,19 @@ def WordLikelihoodProbabilities(trainData,tokenDic,tagDic):
 
 
 # Viterby algorithm 
+# input markovModel = (tokenDic,tagDic,piDic,tagTransitionProbDic,wordLikelihoodProbDic) 
 # return tags - a list of tags, as the size of the input sentence 
 #               the tag of the i word in the sentence is the i elemnet in tags
 #   e.g. tags[0] = 'adverb' -> the tag of the first word is adverb
 #        tags[4] = 'noun' -> the tag of the fifth token is noun  
-def RunViterbyAlg(sentence,tokenDic,tagDic,markovModel):
+def RunViterbyAlg(sentence,markovModel):
     
-    piDic = markovModel[0]
-    tagTransitionProbDic =  markovModel[1]
-    wordLikelihoodProbDic = markovModel[2]
+    # parse the markov model
+    tokenDic = markovModel[0]
+    tagDic = markovModel[1]
+    piDic = markovModel[2]
+    tagTransitionProbDic =  markovModel[3]
+    wordLikelihoodProbDic = markovModel[4]
         
     # Initiate empty matrix
     emptyProb = 0
@@ -300,12 +304,14 @@ StartTime = time.clock()
 wordLikelihoodProbDic = WordLikelihoodProbabilities(trainData,tokenDic,tagDic)
 print("WordLikelihoodProbabilities() (sec):\t" ,time.clock() - StartTime)
 
-markovModel = (piDic,tagTransitionProbDic,wordLikelihoodProbDic)
+markovModel = (tokenDic,tagDic,piDic,tagTransitionProbDic,wordLikelihoodProbDic)
 
 sentence = ['zk1','zk2','zk3','zk4']
 StartTime = time.clock()
-tags = RunViterbyAlg(sentence,tokenDic,tagDic,markovModel)
+tags = RunViterbyAlg(sentence,markovModel)
 print("RunViterbyAlg() (sec):\t\t\t" ,time.clock() - StartTime)
+
+
 
 
 
