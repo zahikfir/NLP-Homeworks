@@ -213,7 +213,9 @@ def WordLikelihoodProbabilities(trainData,tokenDic,tagDic):
 #   e.g. tags[0] = 'adverb' -> the tag of the first word is adverb
 #        tags[4] = 'noun' -> the tag of the fifth token is noun  
 def RunViterbyAlg(sentence,markovModel):
-    
+    if len(sentence) == 0:
+        return []
+
     # parse the markov model
     tokenDic = markovModel[0]
     tagDic = markovModel[1]
