@@ -372,6 +372,19 @@ def WriteConfusionMatrix(confusionMatrix):
     return 0
 
 
+# tag input text using markov model and viterby algorithm
+# returns assumeTags - a list sentences tags, each element is a list of token tags
+#   e.g assumeTags[0][1] = 'adverb'  -> the tag of second word of the first sentence is 'adverb'
+def GetTextTags(testingData,markovModel):
+  
+    # run viterby alg on each sentence
+    assumeTags = []
+    for sentence in testingData:
+        assumeTags.append( RunViterbyAlg(sentence,markovModel) )  # push sentence tags list into assumeTags
+
+    return assumeTags
+
+
 
 print("---------------------- HW4 - Hidden Markov model ----------------------\n")  
 
@@ -437,7 +450,9 @@ elif(executionMode == '-t'):    # testing mode
     print("ParseTestFile() (sec):\t\t\t" ,time.clock() - StartTime)
 
     # tag the test file using the markov model
-    #TODO
+    StartTime = time.clock()
+    assumeTags = GetTextTags(testingData,markovModel)
+    print("GetTextTags() (sec):\t\t\t" ,time.clock() - StartTime)
 
     print('testing mode')
 else:
