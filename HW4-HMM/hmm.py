@@ -45,7 +45,7 @@ def ParseTaggedFile(taggedFilePath):
     fileData = []
 
     file = codecs.open(taggedFilePath,"r","utf-8")                  # Open the file
-    taggedSentences = re.split(".(?=\.\t|\?\t|\!\t)",file.read())   # Split the file into sentences
+    taggedSentences = re.split(".(?=\.\t|\?\t|\!\t)",file.read().lower())   # Split the file into sentences
 
     currentSentence = []
 
@@ -92,7 +92,7 @@ def ParseTestFile(testFilePath):
     
     testData = []
     testFile = codecs.open(testFilePath,"r","utf-8")     # Open the test file
-    testSentences = testFile.read().split('\n')          # split the data into sentences list           
+    testSentences = testFile.read().lower().split('\n')  # split the data into sentences list           
     for sentence in testSentences:                           
         testData.append(sentence.split())                # split the sentence into tokens list
 
