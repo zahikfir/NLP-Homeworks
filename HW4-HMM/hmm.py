@@ -42,39 +42,23 @@ def GetCommandLineArguments():
 #       e.g. fileData[5][4][0] - the token in sentence 5 word 4
 #            fileData[5][4][1] - the tag of the in sentence 5 word 4  
 def ParseTaggedFile(taggedFilePath):
+    
     fileData = []
+    sentenceSeperators = ['.','!','?']      
 
-    file = codecs.open(taggedFilePath,"r","utf-8")                  # Open the file
-    taggedSentences = re.split(".(?=\.\t|\?\t|\!\t)",file.read().lower())   # Split the file into sentences
-
+    file = codecs.open(taggedFilePath,"r","utf-8")      # Open the file
+    fileLines = file.read().lower().split('\n')         # Split the file into lines
+    
     currentSentence = []
-
-    # Handle the first sentence
-    dataRows = taggedSentences[0].split("\n")      # Split the first sentence into row (each row represent a word/token and its labels)
-    for row in dataRows:                           # For each row
-        columns = row.split("\t")                  # Split the row into columns (each column represent a word/token or a label)
-        if len(columns) >= 4:
-            currentSentence.append( (columns[1],columns[3]) )      # (columns[1] = token) , (columns[3] = POS)
-
-    # For each sentence (except the first)
-    for sentence in taggedSentences[1:]:   
-        dataRows = sentence.split("\n")            # Split the sentence into row (each row represent a word/token and its labels)
+    for line in fileLines:
+        columns = line.split('\t')
+        currentSentence.append( (columns[1],columns[3]) )      # (columns[1] = token) , (columns[3] = POS/tag)
+        if columns[1] in sentenceSeperators:
+            fileData.append(currentSentence)    # Push current sentence
+            currentSentence = []                # Reset current sentence
     
-        # The first row is the punctuation at the end of the last sentence
-        columns = dataRows[0].split("\t")          # Split the row into columns (each column represent a word/token or a label)
-        if len(columns) >= 4:
-              currentSentence.append( (columns[0],columns[2]) )    # (columns[0] = token) , (columns[2] = POS)
-        
-        fileData.append(currentSentence)           # Push current sentence
-        currentSentence = []                        # Reset current sentence
-
-        # For each row (except the first)
-        for row in dataRows[1:]:
-            columns = row.split("\t")               # Split the row into columns (each column represent a word/token or a label)
-            if len(columns) >= 4:
-              currentSentence.append( (columns[1],columns[3]) )    # (columns[1] = token) , (columns[3] = POS)
-    
-    fileData.append(currentSentence)          # push last sentence
+    if len(currentSentence) > 0:
+        fileData.append(currentSentence)        # push last if it dose not end with sentenceSeperators
 
     # replace all empty POS with 'clitic'
     for i in range( len(fileData) ):
