@@ -283,9 +283,9 @@ def RunViterbyAlg(sentence,markovModel):
 
 # evaluate the markov model using the Viterby algorithm
 # returns modelAccuracy - (tagged correctly) / (all tags)
-#         confusionMatrix - dictionary the keys are true tags the values are dictionay 
-#                           that the key are given tags and the values are count
-#   e.g.  confusionMatrix['adverb']['noun'] = 5  -> 5 tokens with a real tag of 'adverb' tagged as 'noun'                           
+#         confusionMatrix - dictionary the keys are given tags the values are dictionay 
+#                           that the key are true tags and the values are count
+#   e.g.  confusionMatrix['adverb']['noun'] = 5  -> 5 tokens with a real tag of 'noun' tagged as 'adverb'                           
 def EvaluateMarkovModel(evaluationData,markovModel):
     
     # extract token list and tag list from the evaluation file
@@ -303,10 +303,10 @@ def EvaluateMarkovModel(evaluationData,markovModel):
     # initialize the confusion matrix
     tagDic = markovModel[1]
     confusionMatrix = dict()
-    for knownTag in tagDic:
-        confusionMatrix[knownTag] = dict()
-        for assumeTag in tagDic:
-            confusionMatrix[knownTag][assumeTag] = 0;
+    for assumeTag in tagDic:
+        confusionMatrix[assumeTag] = dict()
+        for knownTag in tagDic:
+            confusionMatrix[assumeTag][knownTag] = 0;
 
     # count success/failure in tagging the tokens
     successCount = 0
@@ -320,7 +320,7 @@ def EvaluateMarkovModel(evaluationData,markovModel):
                 successCount = successCount + 1             
             else:
                 failureCount = failureCount + 1 
-                confusionMatrix[knownTags[i]][assumeTags[i]] = confusionMatrix[knownTags[i]][assumeTags[i]] + 1
+                confusionMatrix[assumeTags[i]][knownTags[i]] = confusionMatrix[assumeTags[i]][knownTags[i]] + 1
            
     modelAccuracy = successCount / (successCount+failureCount)
     return modelAccuracy,confusionMatrix 
@@ -366,7 +366,7 @@ if (executionMode == '-v'):
     print("EvaluateMarkovModel() (sec):\t\t" ,time.clock() - StartTime)
     
     StartTime = time.clock()
-    #PrintConfusionMatrix(confusionMatrix)
+    WriteConfusionMatrix(confusionMatrix)
     print("PrintConfusionMatrix() (sec):\t\t" ,time.clock() - StartTime)
 
     print("\nmodel Accuracy is: ",modelAccuracy,"%\n")
