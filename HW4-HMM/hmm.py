@@ -361,51 +361,64 @@ def WriteConfusionMatrix(confusionMatrix):
 
 print("---------------------- HW4 - Hidden Markov model ----------------------\n")  
 
-# Get Command Line Arguments
+# get Command Line Arguments
 StartTime = time.clock()
 executionMode,trainFilePath,evalOrTestFilePath = GetCommandLineArguments()
 print("GetCommandLineArguments (sec):\t\t" ,time.clock() - StartTime)
 
+# parse the training file
 StartTime = time.clock()
 trainData = ParseTaggedFile(trainFilePath)
 print("ParseTaggedFile(trainingFile) (sec):\t" ,time.clock() - StartTime)
 
+# replace single tokens with 'Kukiritza' + get 2 dictionaries - all tokens, all tags
 StartTime = time.clock()
 trainData,tokenDic,tagDic = BindAllSingleTokens(trainData,"Kukiritza")
 print("BindAllSingleTokens() (sec):\t\t" ,time.clock() - StartTime)
 
+# calculate the probability that a sentence will start with a specific tag
 StartTime = time.clock()
 piDic = CalculatePi(trainData,tagDic)
 print("CalculatePi() (sec):\t\t\t" ,time.clock() - StartTime)
 
+# calculate the probability of a tag: given the previous tag
 StartTime = time.clock()
 tagTransitionProbDic = TagTransitionProbabilities(trainData,tagDic)
 print("TagTransitionProbabilities() (sec):\t" ,time.clock() - StartTime)
 
+# calculate the probability of a token: given it's tag
 StartTime = time.clock()
 wordLikelihoodProbDic = WordLikelihoodProbabilities(trainData,tokenDic,tagDic)
 print("WordLikelihoodProbabilities() (sec):\t" ,time.clock() - StartTime)
 
+# build the markov model according to the training file
 markovModel = (tokenDic,tagDic,piDic,tagTransitionProbDic,wordLikelihoodProbDic)
 
-if (executionMode == '-v'):
+if (executionMode == '-v'):     # evaluation mode
     
+    # parse the gold file (tagged by human) 
     StartTime = time.clock()
     evaluationData = ParseTaggedFile(evalOrTestFilePath)
     print("ParseTaggedFile(evaluationFile) (sec):\t" ,time.clock() - StartTime)
 
+    # evaluate the markov model using the gold file
     StartTime = time.clock()
     modelAccuracy,confusionMatrix = EvaluateMarkovModel(evaluationData,markovModel)
     print("EvaluateMarkovModel() (sec):\t\t" ,time.clock() - StartTime)
     
+    # writes the confusion matrix into "conf_matrix.txt" 
     StartTime = time.clock()
     WriteConfusionMatrix(confusionMatrix)
     print("PrintConfusionMatrix() (sec):\t\t" ,time.clock() - StartTime)
 
+    # results
     print("\nmodel Accuracy is: ",modelAccuracy,"%")
     print("for error analysis see the confusion matrix in conf_matrix.txt\n")
 
-elif(executionMode == '-t'):
+elif(executionMode == '-t'):    # testing mode
+    
+    #testingData = ParseTestFile(evalOrTestFilePath)
+
     print('testing mode')
 else:
     sys.exit("\nWrong input. Please check your command line arguments \nTo run hmm.py in evaluation mode run: \n\t hmm.py -v --train TRAINING_FILE.txt --eval EVALUATION_FILE.txt \nTo run hmm.py in testing mode run: \n\t hmm.py -t --train TRAINING_FILE.txt --test TESTING_FILE.txt")
