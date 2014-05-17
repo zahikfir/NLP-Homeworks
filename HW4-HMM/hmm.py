@@ -27,7 +27,7 @@ def GetCommandLineArguments():
     except:                                 # if one of the option parameters is missing
         sys.exit("\nWrong input. Please check your command line arguments \nTo run hmm.py in evaluation mode run: \n\t hmm.py -v --train TRAINING_FILE.txt --eval EVALUATION_FILE.txt \nTo run hmm.py in testing mode run: \n\t hmm.py -t --train TRAINING_FILE.txt --test TESTING_FILE.txt")
     
-    print('\nStart Program. \n\t Execution mode: {0} \n\t trainFilePath: {1} \n\t evalOrTestFilePath: {2}\n'.format(executionMode, trainFilePath, evalOrTestFilePath))
+    print('Program parameters description: \n\t Execution mode: {0} \n\t trainFilePath: {1} \n\t evalOrTestFilePath: {2}\n'.format(executionMode, trainFilePath, evalOrTestFilePath))
 
     return executionMode,trainFilePath,evalOrTestFilePath
 
@@ -326,7 +326,41 @@ def EvaluateMarkovModel(evaluationData,markovModel):
     return modelAccuracy,confusionMatrix 
 
 
+# writes the confusion matrix into "conf_matrix.txt"
+def WriteConfusionMatrix(confusionMatrix):
+    
+    # open the output file
+    outFile = codecs.open("conf_matrix.txt", "w", "utf-8")
+    
+    # write the columns headers
+    outFile.write( '{0:18s}'.format("") )
+    outFile.write('\t')
+    for column in confusionMatrix:
+        outFile.write( '{0:18s}'.format(column) )
+        outFile.write('\t')
+    outFile.write('\n')
 
+    # write the rows
+    for row,columns in confusionMatrix.items():
+        outFile.write( '{0:18s}'.format(row) )
+        outFile.write('\t')
+        for column,value in columns.items():
+            if value == 0:
+                value_string = ""
+            else:
+                value_string = str(value)
+            outFile.write( '{0:18s}'.format(value_string) )      
+            #outFile.write( '{0:18s}'.format(column+value_string) )    # for debug, make sure the value consists with column header     
+            outFile.write('\t')
+        outFile.write('\n')
+
+
+    outFile.close()
+    return 0
+
+
+
+print("---------------------- HW4 - Hidden Markov model ----------------------\n")  
 
 # Get Command Line Arguments
 StartTime = time.clock()
@@ -369,7 +403,8 @@ if (executionMode == '-v'):
     WriteConfusionMatrix(confusionMatrix)
     print("PrintConfusionMatrix() (sec):\t\t" ,time.clock() - StartTime)
 
-    print("\nmodel Accuracy is: ",modelAccuracy,"%\n")
+    print("\nmodel Accuracy is: ",modelAccuracy,"%")
+    print("for error analysis see the confusion matrix in conf_matrix.txt\n")
 
 elif(executionMode == '-t'):
     print('testing mode')
@@ -388,5 +423,4 @@ for sentence in trainData:
             outputFile.writelines(word[0]+ " ")
         outputFile.write(os.linesep)
 
-print("\nHW4 - Hidden Markov model\n") 
-
+print("---------------------- HW4 - Hidden Markov model ----------------------\n")  
