@@ -296,6 +296,14 @@ def EvaluateMarkovModel(evaluationData,markovModel):
         EvaluationData_Tokens.append(tokens)
         EvaluationData_Tags.append(taggs)
 
+    # initialize the confusion matrix
+    tagDic = markovModel[1]
+    confusionMatrix = dict()
+    for knownTag in tagDic:
+        confusionMatrix[knownTag] = dict()
+        for assumeTag in tagDic:
+            confusionMatrix[knownTag][assumeTag] = 0;
+
     # count success/failure in tagging the tokens
     successCount = 0
     failureCount = 0
@@ -303,15 +311,15 @@ def EvaluateMarkovModel(evaluationData,markovModel):
         sentence = EvaluationData_Tokens[i]                 # list of tokens
         knownTags = EvaluationData_Tags[i]                  # list on known tags
         assumeTags = RunViterbyAlg(sentence,markovModel)    # list of assume tags
-        
         for i in range( len(knownTags) ):
             if knownTags[i] == assumeTags[i]:
                 successCount = successCount + 1             
             else:
                 failureCount = failureCount + 1 
+                confusionMatrix[knownTags[i]][assumeTags[i]] = confusionMatrix[knownTags[i]][assumeTags[i]] + 1
            
     modelAccuracy = successCount / (successCount+failureCount)
-    return modelAccuracy 
+    return modelAccuracy,confusionMatrix 
 
 
 # Get Command Line Arguments
@@ -352,7 +360,7 @@ if (executionMode == '-v'):
     print("ParseTaggedFile(evaluationFile) (sec):\t" ,time.clock() - StartTime)
 
     StartTime = time.clock()
-    modelAccuracy = EvaluateMarkovModel(evaluationData,markovModel)
+    modelAccuracy,confusionMatrix = EvaluateMarkovModel(evaluationData,markovModel)
     print("EvaluateMarkovModel() (sec):\t\t" ,time.clock() - StartTime)
 
     print("\nmodel Accuracy is: ",modelAccuracy,"%\n")
