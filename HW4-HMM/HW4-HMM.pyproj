@@ -13,7 +13,7 @@
     <Name>HW4-HMM</Name>
     <RootNamespace>HW4-HMM</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>-v --train ..\Data\HW4\Input\Training\training_pos_tagging.txt --eval ..\Data\HW4\Input\Gold\gold_pos_tagging.txt</CommandLineArguments>
+    <CommandLineArguments>-t --train ..\Data\HW4\Input\Training\training_pos_tagging.txt --test ..\Data\HW4\Input\Test\test_pos_tagging.txt</CommandLineArguments>
     <InterpreterPath />
     <InterpreterArguments>
     </InterpreterArguments>

@@ -85,6 +85,20 @@ def ParseTaggedFile(trainFilePath):
     return trainData 
 
 
+# parse the testing file 
+# returns testData: list of sentences, each sentence is a list of tokens
+# testData[0][1] = 'dog'  -> the second token of the first sentence is dog
+def ParseTestFile(evalOrTestFilePath):
+    
+    testData = []
+    trainFile = codecs.open(evalOrTestFilePath,"r","utf-8")     # Open the test file
+    trainSentences = trainFile.read().split('\n')               # split the data into sentences list           
+    for sentence in trainSentences:                             
+        testData.append(sentence.split())                       # split the sentence into tokens list
+
+    return testData
+
+
 # Replace all the tokens that appear once to uniformToken
 # Return tokenDic: a dictionary, the keys are tokens and the values are number of appearances
 #   e.g. tokenDic['Dog'] = 5 -> there are 5 appearances of the token 'Dog' in the training corpus
@@ -417,7 +431,13 @@ if (executionMode == '-v'):     # evaluation mode
 
 elif(executionMode == '-t'):    # testing mode
     
-    #testingData = ParseTestFile(evalOrTestFilePath)
+    # parse the test file 
+    StartTime = time.clock()
+    testingData = ParseTestFile(evalOrTestFilePath)
+    print("ParseTestFile() (sec):\t\t\t" ,time.clock() - StartTime)
+
+    # tag the test file using the markov model
+    #TODO
 
     print('testing mode')
 else:
