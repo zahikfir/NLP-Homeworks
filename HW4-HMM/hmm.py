@@ -369,7 +369,7 @@ def WriteConfusionMatrix(confusionMatrix):
         outFile.write('\n')
 
     outFile.close()
-    return 0
+    return True
 
 
 # tag input text using markov model and viterby algorithm
@@ -385,6 +385,9 @@ def GetTextTags(testingData,markovModel):
     return assumeTags
 
 
+def WriteTagToFile(assumeTags):
+
+    return True
 
 print("---------------------- HW4 - Hidden Markov model ----------------------\n")  
 
@@ -439,8 +442,9 @@ if (executionMode == '-v'):     # evaluation mode
     print("PrintConfusionMatrix() (sec):\t\t" ,time.clock() - StartTime)
 
     # results
-    print("\nmodel Accuracy is: ",modelAccuracy,"%")
-    print("for error analysis see the confusion matrix in conf_matrix.txt\n")
+    print("\nAll procedures have been completed")
+    print("\tmodel Accuracy is: ",modelAccuracy,"%")
+    print("\tfor error analysis see the conf_matrix.txt\n")
 
 elif(executionMode == '-t'):    # testing mode
     
@@ -454,7 +458,14 @@ elif(executionMode == '-t'):    # testing mode
     assumeTags = GetTextTags(testingData,markovModel)
     print("GetTextTags() (sec):\t\t\t" ,time.clock() - StartTime)
 
-    print('testing mode')
+    # write the tokens into "hmm_output.txt"
+    StartTime = time.clock()
+    WriteTagToFile(assumeTags)
+    print("WriteTagToFile() (sec):\t\t\t" ,time.clock() - StartTime)
+
+    # summary
+    print("\nAll procedures have been completed")
+    print("\tsee hmm_output.txt for tags\n")
 else:
     sys.exit("\nWrong input. Please check your command line arguments \nTo run hmm.py in evaluation mode run: \n\t hmm.py -v --train TRAINING_FILE.txt --eval EVALUATION_FILE.txt \nTo run hmm.py in testing mode run: \n\t hmm.py -t --train TRAINING_FILE.txt --test TESTING_FILE.txt")
 
