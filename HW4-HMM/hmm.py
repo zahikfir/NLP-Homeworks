@@ -8,7 +8,7 @@ import sys, os, time, codecs, math,re
 from collections import Counter
 
 
-# Return the execution mod and the appropriate command arguments
+# Return the execution mode and the appropriate command arguments
 def GetCommandLineArguments():
     try:
         if len(sys.argv) < 4: 
@@ -32,69 +32,69 @@ def GetCommandLineArguments():
     return executionMode,trainFilePath,evalOrTestFilePath
 
 
-# Parse the training file and returns a list of sentences, each sentence is a list of (word,POS)
-# Returns trainData: list of sentences, each sentence is a list of word, each word is (Token,POS-tag)
+# Parse tagged file and returns a list of sentences, each sentence is a list of (word,POS)
+# Returns fileData: list of sentences, each sentence is a list of word, each word is (Token,POS-tag)
 #
-# [--------------------------------------- trainData ---------------------------------------]
+# [--------------------------------------- fileData ----------------------------------------]
 # [ [sentence-1]...[ (word-1,POS-Tag)(word-2,POS-Tag)...(word-n,POS-Tag)  ]...[sentence-n]  ]
 #                  [--------------------- sentence k ---------------------]
 #
-#       e.g. trainData[5][4][0] - the token in sentence 5 word 4
-#            trainData[5][4][1] - the tag of the in sentence 5 word 4  
-def ParseTaggedFile(trainFilePath):
-    trainData = []
+#       e.g. fileData[5][4][0] - the token in sentence 5 word 4
+#            fileData[5][4][1] - the tag of the in sentence 5 word 4  
+def ParseTaggedFile(taggedFilePath):
+    fileData = []
 
-    trainFile = codecs.open(trainFilePath,"r","utf-8")                  # Open the train file
-    trainSentences = re.split(".(?=\.\t|\?\t|\!\t)",trainFile.read())   # Split the train file into sentences
+    file = codecs.open(taggedFilePath,"r","utf-8")                  # Open the file
+    taggedSentences = re.split(".(?=\.\t|\?\t|\!\t)",file.read())   # Split the file into sentences
 
     currentSentence = []
 
     # Handle the first sentence
-    trainRows = trainSentences[0].split("\n")       # Split the first sentence into row (each row represent a word/token and its labels)
-    for row in trainRows:                           # For each row
-        columns = row.split("\t")                   # Split the row into columns (each column represent a word/token or a label)
+    dataRows = taggedSentences[0].split("\n")      # Split the first sentence into row (each row represent a word/token and its labels)
+    for row in dataRows:                           # For each row
+        columns = row.split("\t")                  # Split the row into columns (each column represent a word/token or a label)
         if len(columns) >= 4:
             currentSentence.append( (columns[1],columns[3]) )      # (columns[1] = token) , (columns[3] = POS)
 
     # For each sentence (except the first)
-    for sentence in trainSentences[1:]:   
-        trainRows = sentence.split("\n")            # Split the sentence into row (each row represent a word/token and its labels)
+    for sentence in taggedSentences[1:]:   
+        dataRows = sentence.split("\n")            # Split the sentence into row (each row represent a word/token and its labels)
     
         # The first row is the punctuation at the end of the last sentence
-        columns = trainRows[0].split("\t")          # Split the row into columns (each column represent a word/token or a label)
+        columns = dataRows[0].split("\t")          # Split the row into columns (each column represent a word/token or a label)
         if len(columns) >= 4:
               currentSentence.append( (columns[0],columns[2]) )    # (columns[0] = token) , (columns[2] = POS)
         
-        trainData.append(currentSentence)           # Push current sentence
+        fileData.append(currentSentence)           # Push current sentence
         currentSentence = []                        # Reset current sentence
 
         # For each row (except the first)
-        for row in trainRows[1:]:
+        for row in dataRows[1:]:
             columns = row.split("\t")               # Split the row into columns (each column represent a word/token or a label)
             if len(columns) >= 4:
               currentSentence.append( (columns[1],columns[3]) )    # (columns[1] = token) , (columns[3] = POS)
     
-    trainData.append(currentSentence)          # push last sentence
+    fileData.append(currentSentence)          # push last sentence
 
     # replace all empty POS with 'clitic'
-    for i in range( len(trainData) ):
-        for j in range( len(trainData[i]) ):
-            if trainData[i][j][1] == '':
-                trainData[i][j] = (trainData[i][j][0],'clitic')
+    for i in range( len(fileData) ):
+        for j in range( len(fileData[i]) ):
+            if fileData[i][j][1] == '':
+                fileData[i][j] = (fileData[i][j][0],'clitic')
 
-    return trainData 
+    return fileData 
 
 
 # parse the testing file 
 # returns testData: list of sentences, each sentence is a list of tokens
 # testData[0][1] = 'dog'  -> the second token of the first sentence is dog
-def ParseTestFile(evalOrTestFilePath):
+def ParseTestFile(testFilePath):
     
     testData = []
-    trainFile = codecs.open(evalOrTestFilePath,"r","utf-8")     # Open the test file
-    trainSentences = trainFile.read().split('\n')               # split the data into sentences list           
-    for sentence in trainSentences:                             
-        testData.append(sentence.split())                       # split the sentence into tokens list
+    testFile = codecs.open(testFilePath,"r","utf-8")     # Open the test file
+    testSentences = testFile.read().split('\n')          # split the data into sentences list           
+    for sentence in testSentences:                           
+        testData.append(sentence.split())                # split the sentence into tokens list
 
     return testData
 
