@@ -323,7 +323,9 @@ def EvaluateMarkovModel(evaluationData,markovModel):
 
 
 # Get Command Line Arguments
+StartTime = time.clock()
 executionMode,trainFilePath,evalOrTestFilePath = GetCommandLineArguments()
+print("GetCommandLineArguments (sec):\t\t" ,time.clock() - StartTime)
 
 StartTime = time.clock()
 trainData = ParseTaggedFile(trainFilePath)
@@ -346,12 +348,6 @@ wordLikelihoodProbDic = WordLikelihoodProbabilities(trainData,tokenDic,tagDic)
 print("WordLikelihoodProbabilities() (sec):\t" ,time.clock() - StartTime)
 
 markovModel = (tokenDic,tagDic,piDic,tagTransitionProbDic,wordLikelihoodProbDic)
-
-sentence = ['zk1','zk2','zk3','zk4']
-StartTime = time.clock()
-tags = RunViterbyAlg(sentence,markovModel)
-print("RunViterbyAlg() (sec):\t\t\t" ,time.clock() - StartTime)
-
 
 if (executionMode == '-v'):
     
