@@ -354,7 +354,6 @@ def WriteConfusionMatrix(confusionMatrix):
             outFile.write('\t')
         outFile.write('\n')
 
-
     outFile.close()
     return 0
 
