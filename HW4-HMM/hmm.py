@@ -45,7 +45,7 @@ def ParseTaggedFile(taggedFilePath):
     fileData = []
 
     file = codecs.open(taggedFilePath,"r","utf-8")                  # Open the file
-    taggedSentences = re.split(".(?=t\.\t|\?\t|\!\t)",file.read().lower())   # Split the file into sentences
+    taggedSentences = re.split(".(?=\.\t|\?\t|\!\t)",file.read().lower())   # Split the file into sentences
 
     currentSentence = []
 
