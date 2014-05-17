@@ -86,9 +86,9 @@ def ParseTaggedFile(trainFilePath):
 
 
 # Replace all the tokens that appear once to uniformToken
-# Return tokenDic: a dictionary, were the keys are tokens and the values are number of appearances
+# Return tokenDic: a dictionary, the keys are tokens and the values are number of appearances
 #   e.g. tokenDic['Dog'] = 5 -> there are 5 appearances of the token 'Dog' in the training corpus
-# Return tagDic - a dictionary, were the keys are POS/tags and the values are number of appearances
+# Return tagDic - a dictionary, the keys are POS/tags and the values are number of appearances
 #   e.g. tagDic['adverb'] = 5 -> there are 5 appearances of the tag 'adverb' in the training corpus
 def BindAllSingleTokens(trainData,uniformToken):
     
@@ -149,7 +149,7 @@ def CalculatePi(trainData,tagDic):
 
 # Calculate the probability of a tag: given the previous tag
 # returns tagTransitionProbDic: a dictionary were the key are preceding Tag, 
-#           values are dictionary were the keys are following Tag and the values are Transition Probability
+#           values are dictionary the keys are following Tag and the values are Transition Probability
 #   e.g. tagTransitionProbDic['adverb']['noun'] = 0.5 
 #                   -> half of the tags that comes after 'adverb' are 'noun'
 #                   -> the probability of a tag 'noun' given the previous tag was 'adverb' is 0.5
@@ -178,7 +178,7 @@ def TagTransitionProbabilities(trainData,tagDic):
 
 
 # Calculate the probability of a token: given it's tag
-# returns wordLikelihoodProbDic: a dictionary were the key are preceding Tag, values are also a dictionary
+# returns wordLikelihoodProbDic: a dictionary the key are preceding Tag, values are also a dictionary
 #            were the keys are tokens and the values are Probability of the token given the tag
 #   e.g. wordLikelihoodProbDic['adverb']['dog'] = 0.3
 #                   -> the probability of a token 'dog' given it's tagged 'adverb' is 0.3       
@@ -282,6 +282,10 @@ def RunViterbyAlg(sentence,markovModel):
     
 
 # evaluate the markov model using the Viterby algorithm
+# returns modelAccuracy - (tagged correctly) / (all tags)
+#         confusionMatrix - dictionary the keys are true tags the values are dictionay 
+#                           that the key are given tags and the values are count
+#   e.g.  confusionMatrix['adverb']['noun'] = 5  -> 5 tokens with a real tag of 'adverb' tagged as 'noun'                           
 def EvaluateMarkovModel(evaluationData,markovModel):
     
     # extract token list and tag list from the evaluation file
@@ -322,6 +326,8 @@ def EvaluateMarkovModel(evaluationData,markovModel):
     return modelAccuracy,confusionMatrix 
 
 
+
+
 # Get Command Line Arguments
 StartTime = time.clock()
 executionMode,trainFilePath,evalOrTestFilePath = GetCommandLineArguments()
@@ -358,6 +364,10 @@ if (executionMode == '-v'):
     StartTime = time.clock()
     modelAccuracy,confusionMatrix = EvaluateMarkovModel(evaluationData,markovModel)
     print("EvaluateMarkovModel() (sec):\t\t" ,time.clock() - StartTime)
+    
+    StartTime = time.clock()
+    #PrintConfusionMatrix(confusionMatrix)
+    print("PrintConfusionMatrix() (sec):\t\t" ,time.clock() - StartTime)
 
     print("\nmodel Accuracy is: ",modelAccuracy,"%\n")
 
