@@ -385,8 +385,18 @@ def GetTextTags(testingData,markovModel):
     return assumeTags
 
 
+# write the tokens into "hmm_output.txt"
 def WriteTagToFile(assumeTags):
+    
+    # open the output file
+    outFile = codecs.open("hmm_output.txt", "w", "utf-8")
 
+    for sentence in assumeTags:
+        for tag in sentence:
+            outFile.write(tag + " ")
+        outFile.write("\n")
+
+    outFile.close()
     return True
 
 print("---------------------- HW4 - Hidden Markov model ----------------------\n")  
