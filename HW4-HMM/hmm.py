@@ -83,12 +83,13 @@ def ParseTestFile(testFilePath):
     return testData
 
 
-# Replace all the tokens that appear once to uniformToken
+# List all the tokens with one appearance 
 # Return tokenDic: a dictionary, the keys are tokens and the values are number of appearances
 #   e.g. tokenDic['Dog'] = 5 -> there are 5 appearances of the token 'Dog' in the training corpus
 # Return tagDic - a dictionary, the keys are POS/tags and the values are number of appearances
 #   e.g. tagDic['adverb'] = 5 -> there are 5 appearances of the tag 'adverb' in the training corpus
-def BindAllSingleTokens(trainData,uniformToken):
+# Return appearOnceList: List all the tokens with one appearance
+def ListSingleTokens(trainData,uniformToken):
     
     # Count token appearances
     tokenDic = Counter()
@@ -104,18 +105,7 @@ def BindAllSingleTokens(trainData,uniformToken):
         if val == 1:
             appearOnceList.append(token)
 
-    # Replace all the tokens that appear once
-    for i in range( len(trainData) ):
-        for j in range( len(trainData[i]) ):
-            if trainData[i][j][0] in appearOnceList:
-                trainData[i][j] = (uniformToken,trainData[i][j][1])
-
-    # Update tokenDic after the replacements
-    tokenDic[uniformToken] = len(appearOnceList)
-    for token in appearOnceList:
-        tokenDic.pop(token)
-
-    return trainData,tokenDic,tagDic
+    return tokenDic,tagDic,appearOnceList
 
 
 # Calculate the probability that a sentence will start with a specific tag
@@ -180,7 +170,7 @@ def TagTransitionProbabilities(trainData,tagDic):
 #            were the keys are tokens and the values are Probability of the token given the tag
 #   e.g. wordLikelihoodProbDic['adverb']['dog'] = 0.3
 #                   -> the probability of a token 'dog' given it's tagged 'adverb' is 0.3       
-def WordLikelihoodProbabilities(trainData,tokenDic,tagDic):
+def WordLikelihoodProbabilities(trainData,tokenDic,tagDic,appearOnceList):
     
     # Create empty dictionary
     wordLikelihoodProbDic = dict()
@@ -188,13 +178,16 @@ def WordLikelihoodProbabilities(trainData,tokenDic,tagDic):
         wordLikelihoodProbDic[tag] = dict()
         for token in tokenDic:
             wordLikelihoodProbDic[tag][token] = 0
-    
+        wordLikelihoodProbDic[tag]['Kukiritza'] = 0
+            
     # Update the dictionary with the counts
     for i in range( len(trainData) ):               # loop all sentences in train data
         for j in range( len(trainData[i]) ):        # loop all words in sentence
             currentToken = trainData[i][j][0]
             currentTag = trainData[i][j][1]
             wordLikelihoodProbDic[currentTag][currentToken] = wordLikelihoodProbDic[currentTag][currentToken]+ 1
+            if currentToken in appearOnceList:
+                wordLikelihoodProbDic[currentTag]['Kukiritza'] = wordLikelihoodProbDic[currentTag]['Kukiritza']+ 1
 
     # Update the dictionary with the probabilities
     for tag in tagDic:
@@ -402,10 +395,10 @@ StartTime = time.clock()
 trainData = ParseTaggedFile(trainFilePath)
 print("ParseTaggedFile(trainingFile) (sec):\t" ,time.clock() - StartTime)
 
-# replace single tokens with 'Kukiritza' + get 2 dictionaries - all tokens, all tags
+# list all the tokens with one appearance + get 2 dictionaries - all tokens, all tags
 StartTime = time.clock()
-trainData,tokenDic,tagDic = BindAllSingleTokens(trainData,"Kukiritza")
-print("BindAllSingleTokens() (sec):\t\t" ,time.clock() - StartTime)
+tokenDic,tagDic,appearOnceList = ListSingleTokens(trainData,"Kukiritza")
+print("ListSingleTokens() (sec):\t\t" ,time.clock() - StartTime)
 
 # calculate the probability that a sentence will start with a specific tag
 StartTime = time.clock()
@@ -419,7 +412,7 @@ print("TagTransitionProbabilities() (sec):\t" ,time.clock() - StartTime)
 
 # calculate the probability of a token: given it's tag
 StartTime = time.clock()
-wordLikelihoodProbDic = WordLikelihoodProbabilities(trainData,tokenDic,tagDic)
+wordLikelihoodProbDic = WordLikelihoodProbabilities(trainData,tokenDic,tagDic,appearOnceList)
 print("WordLikelihoodProbabilities() (sec):\t" ,time.clock() - StartTime)
 
 # build the markov model according to the training file
