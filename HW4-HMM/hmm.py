@@ -222,7 +222,7 @@ def RunViterbyAlg(sentence,markovModel):
     wordLikelihoodProbDic = markovModel[4]
         
     # Initiate empty matrix
-    emptyProb = 0
+    emptyProb = -1e1000
     emptyBacktrace = 'emptyTag'
     sentenceLen = len(sentence)
     viterbyMatrix = []
@@ -238,29 +238,36 @@ def RunViterbyAlg(sentence,markovModel):
             wordLikelihoodProb = wordLikelihoodProbDic[tag][sentence[0]]
         else:
             wordLikelihoodProb = wordLikelihoodProbDic[tag]["Kukiritza"]
-        viterbyMatrix[0][tag] = ( piProb * wordLikelihoodProb , tag )
+        if piProb == 0:
+            piProb = 1e-50
+        if wordLikelihoodProb == 0:
+            wordLikelihoodProb = 1e-50
+        viterbyMatrix[0][tag] = ( math.log(piProb) + math.log(wordLikelihoodProb) , tag )
 
     # Fill in the matrix 
     for i in range(1,sentenceLen):                      # for each time
         for tag in tagDic:                              # go over all tags
-            viterbyMatrix[i][tag] = (-100,'emptyTag')   # init prob
             
             # calc word Likelihood Probability
             if sentence[i] in tokenDic:
                 wordLikelihoodProb = wordLikelihoodProbDic[tag][sentence[i]]
             else:
                 wordLikelihoodProb = wordLikelihoodProbDic[tag]["Kukiritza"]
+            if wordLikelihoodProb == 0:
+                    wordLikelihoodProb = 1e-50
             
             # go over all tag in previous time
             for previousTag in tagDic:
                 previousTagProb = viterbyMatrix[i-1][previousTag][0]            # the probability og the tag in previous time 
                 transitionProb = tagTransitionProbDic[previousTag][tag]         # transition probabilty from previous tag to current tag
-                prob = previousTagProb * transitionProb * wordLikelihoodProb    # current probabilty using specific previous tag 
+                if transitionProb == 0:
+                    transitionProb = 1e-50
+                prob = previousTagProb + math.log(transitionProb) + math.log(wordLikelihoodProb)    # current probabilty using specific previous tag 
                 if prob > viterbyMatrix[i][tag][0]:
                     viterbyMatrix[i][tag] = (prob,previousTag)                  # save the max prob
     
     # find the max tag prob in the last column of the viterby matrix
-    maxProb = -1
+    maxProb = -1e1000
     maxTag = 'emptyTag'               
     for tag in tagDic:
         currentProb = viterbyMatrix[sentenceLen-1][tag][0]
