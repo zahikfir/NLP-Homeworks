@@ -188,6 +188,7 @@ def WordLikelihoodProbabilities(trainData,tokenDic,tagDic,appearOnceList):
             wordLikelihoodProbDic[currentTag][currentToken] = wordLikelihoodProbDic[currentTag][currentToken]+ 1
             if currentToken in appearOnceList:
                 wordLikelihoodProbDic[currentTag]['Kukiritza'] = wordLikelihoodProbDic[currentTag]['Kukiritza']+ 1
+                appearOnceList.remove(currentToken)
 
     # Update the dictionary with the probabilities
     for tag in tagDic:
