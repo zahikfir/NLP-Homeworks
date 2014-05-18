@@ -337,7 +337,7 @@ def WriteConfusionMatrix(confusionMatrix):
     for column in confusionMatrix:
         outFile.write( '{0:18s}'.format(column) )
         outFile.write('\t')
-    outFile.write('\n')
+    outFile.write(os.linesep)
 
     # write the rows
     for row,columns in confusionMatrix.items():
@@ -351,7 +351,7 @@ def WriteConfusionMatrix(confusionMatrix):
             outFile.write( '{0:18s}'.format(value_string) )      
             #outFile.write( '{0:18s}'.format(column+value_string) )    # for debug, make sure the value consists with column header     
             outFile.write('\t')
-        outFile.write('\n')
+        outFile.write(os.linesep)
 
     outFile.close()
     return True
@@ -379,7 +379,7 @@ def WriteTagToFile(assumeTags):
     for sentence in assumeTags:
         for tag in sentence:
             outFile.write(tag + " ")
-        outFile.write("\n")
+        outFile.write(os.linesep)
 
     outFile.close()
     return True
