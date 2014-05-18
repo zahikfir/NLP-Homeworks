@@ -384,6 +384,7 @@ def WriteTagToFile(assumeTags):
     return True
 
 print("---------------------- HW4 - Hidden Markov model ----------------------\n")  
+TotalStartTime = time.clock()
 
 # get Command Line Arguments
 StartTime = time.clock()
@@ -436,7 +437,7 @@ if (executionMode == '-v'):     # evaluation mode
     print("PrintConfusionMatrix() (sec):\t\t" ,time.clock() - StartTime)
 
     # results
-    print("\nAll procedures have been completed")
+    print("\nAll procedures have been completed in ",time.clock() - TotalStartTime," sec")
     print("\tmodel Accuracy is: ",modelAccuracy,"%")
     print("\tfor error analysis see the conf_matrix.txt\n")
 
@@ -458,21 +459,9 @@ elif(executionMode == '-t'):    # testing mode
     print("WriteTagToFile() (sec):\t\t\t" ,time.clock() - StartTime)
 
     # summary
-    print("\nAll procedures have been completed")
+    print("\nAll procedures have been completed in ",time.clock() - TotalStartTime," sec")
     print("\tsee hmm_output.txt for tags\n")
 else:
     sys.exit("\nWrong input. Please check your command line arguments \nTo run hmm.py in evaluation mode run: \n\t hmm.py -v --train TRAINING_FILE.txt --eval EVALUATION_FILE.txt \nTo run hmm.py in testing mode run: \n\t hmm.py -t --train TRAINING_FILE.txt --test TESTING_FILE.txt")
-
-
-
-
-
-
-outputFile = codecs.open("OutputFile.txt", "w", "utf-8")        # for debug only !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-for sentence in trainData:
-    if len(sentence) >= 1:
-        for word in sentence:
-            outputFile.writelines(word[0]+ " ")
-        outputFile.write(os.linesep)
 
 print("---------------------- HW4 - Hidden Markov model ----------------------\n")  
