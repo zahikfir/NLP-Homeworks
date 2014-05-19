@@ -314,12 +314,12 @@ def EvaluateMarkovModel(evaluationData,markovModel):
         sentence = EvaluationData_Tokens[i]                 # list of tokens
         knownTags = EvaluationData_Tags[i]                  # list on known tags
         assumeTags = RunViterbyAlg(sentence,markovModel)    # list of assume tags
-        for i in range( len(knownTags) ):
-            if knownTags[i] == assumeTags[i]:
+        for j in range( len(knownTags) ):
+            if knownTags[j] == assumeTags[j]:
                 successCount = successCount + 1             
             else:
                 failureCount = failureCount + 1 
-                confusionMatrix[assumeTags[i]][knownTags[i]] = confusionMatrix[assumeTags[i]][knownTags[i]] + 1
+                confusionMatrix[assumeTags[j]][knownTags[j]] = confusionMatrix[assumeTags[j]][knownTags[j]] + 1
            
     modelAccuracy = successCount / (successCount+failureCount)
     return modelAccuracy,confusionMatrix 
