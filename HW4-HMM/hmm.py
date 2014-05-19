@@ -32,15 +32,15 @@ def GetCommandLineArguments():
     return executionMode,trainFilePath,evalOrTestFilePath
 
 
-# Parse tagged file and returns a list of sentences, each sentence is a list of (word,POS)
-# Returns fileData: list of sentences, each sentence is a list of word, each word is (Token,POS-tag)
+# Parse a tagged file 
+# Returns fileData: list of sentences, each sentence is a list of word, each word is (Token,POS/tag)
 #
 # [--------------------------------------- fileData ----------------------------------------]
-# [ [sentence-1]...[ (word-1,POS-Tag)(word-2,POS-Tag)...(word-n,POS-Tag)  ]...[sentence-n]  ]
+# [ [sentence 1]...[ (word 1,POS/Tag)(word 2,POS/Tag)...(word n,POS/Tag)  ]...[sentence n]  ]
 #                  [--------------------- sentence k ---------------------]
 #
-#       e.g. fileData[5][4][0] - the token in sentence 5 word 4
-#            fileData[5][4][1] - the tag of the in sentence 5 word 4  
+#       e.g. fileData[5][4][0] - the token of the fourth word of the fifth sentence
+#            fileData[0][1][1] - the tag of the second word of the first sentence
 def ParseTaggedFile(taggedFilePath):
     
     fileData = []
@@ -52,13 +52,13 @@ def ParseTaggedFile(taggedFilePath):
     currentSentence = []
     for line in fileLines:
         columns = line.split('\t')
-        currentSentence.append( (columns[1],columns[3]) )      # (columns[1] = token) , (columns[3] = POS/tag)
+        currentSentence.append( (columns[1],columns[3]) )   # (columns[1] = token) , (columns[3] = POS/tag)
         if columns[1] in sentenceSeperators:
             fileData.append(currentSentence)    # Push current sentence
             currentSentence = []                # Reset current sentence
     
     if len(currentSentence) > 0:
-        fileData.append(currentSentence)        # push last if it dose not end with sentenceSeperators
+        fileData.append(currentSentence)        # push last sentence if it dose not end with sentenceSeperators
 
     # replace all empty POS with 'clitic'
     for i in range( len(fileData) ):
@@ -78,26 +78,26 @@ def ParseTestFile(testFilePath):
     testFile = codecs.open(testFilePath,"r","utf-8")     # Open the test file
     testSentences = testFile.read().lower().split('\n')  # split the data into sentences list           
     for sentence in testSentences:                           
-        testData.append(sentence.split())                # split the sentence into tokens list
+        testData.append(sentence.split())                # split the sentence into tokens list + append
 
     return testData
 
 
 # List all the tokens with one appearance 
+# Return appearOnceList: List all the tokens with one appearance
 # Return tokenDic: a dictionary, the keys are tokens and the values are number of appearances
 #   e.g. tokenDic['Dog'] = 5 -> there are 5 appearances of the token 'Dog' in the training corpus
 # Return tagDic - a dictionary, the keys are POS/tags and the values are number of appearances
 #   e.g. tagDic['adverb'] = 5 -> there are 5 appearances of the tag 'adverb' in the training corpus
-# Return appearOnceList: List all the tokens with one appearance
-def ListSingleTokens(trainData,uniformToken):
+def ListSingleTokens(trainData):
     
-    # Count token appearances
+    # Count appearances
     tokenDic = Counter()
     tagDic = Counter()        
     for sentence in trainData:
         for word in sentence:
-            tokenDic.update( [word[0]] )
-            tagDic.update( [word[1]] )
+            tokenDic.update( [word[0]] )    # count tokens
+            tagDic.update( [word[1]] )      # count tag
 
     # List all the tokens with single appearance
     appearOnceList = []
@@ -109,9 +109,9 @@ def ListSingleTokens(trainData,uniformToken):
 
 
 # Calculate the probability that a sentence will start with a specific tag
-# returns piDic: dictionary, keys are tags, values are the probability that a sentence will start with this tag
+# returns: piDic = dictionary, keys are tags, values are the probability that a sentence will start with this tag
 #   e.g. piDic['adverb'] = 0.5 -> half of the sentences starts with the tag 'adverb'               
-#                             -> the probability that a sentence will start with a 'adverb' is 0.5
+#                                 (the probability that a sentence will start with a 'adverb' is 0.5)
 def CalculatePi(trainData,tagDic):
     
     # Count tag appearances at the beginning of a sentence
@@ -136,7 +136,7 @@ def CalculatePi(trainData,tagDic):
 
 
 # Calculate the probability of a tag: given the previous tag
-# returns tagTransitionProbDic: a dictionary were the key are preceding Tag, 
+# returns: tagTransitionProbDic: a dictionary were the key are preceding Tag, 
 #           values are dictionary the keys are following Tag and the values are Transition Probability
 #   e.g. tagTransitionProbDic['adverb']['noun'] = 0.5 
 #                   -> half of the tags that comes after 'adverb' are 'noun'
@@ -166,7 +166,7 @@ def TagTransitionProbabilities(trainData,tagDic):
 
 
 # Calculate the probability of a token: given it's tag
-# returns wordLikelihoodProbDic: a dictionary the key are preceding Tag, values are also a dictionary
+# returns: wordLikelihoodProbDic: a dictionary the key are preceding Tag, values are also a dictionary
 #            were the keys are tokens and the values are Probability of the token given the tag
 #   e.g. wordLikelihoodProbDic['adverb']['dog'] = 0.3
 #                   -> the probability of a token 'dog' given it's tagged 'adverb' is 0.3       
@@ -186,9 +186,9 @@ def WordLikelihoodProbabilities(trainData,tokenDic,tagDic,appearOnceList):
             currentToken = trainData[i][j][0]
             currentTag = trainData[i][j][1]
             wordLikelihoodProbDic[currentTag][currentToken] = wordLikelihoodProbDic[currentTag][currentToken]+ 1
-            if currentToken in appearOnceList:
+            if currentToken in appearOnceList:          # if the token apear once, count it as Kukiritza as well
                 wordLikelihoodProbDic[currentTag]['Kukiritza'] = wordLikelihoodProbDic[currentTag]['Kukiritza']+ 1
-                appearOnceList.remove(currentToken)
+                appearOnceList.remove(currentToken)     # performances
 
     # Update the dictionary with the probabilities
     for tag in tagDic:
@@ -200,7 +200,7 @@ def WordLikelihoodProbabilities(trainData,tokenDic,tagDic,appearOnceList):
 
 # Viterby algorithm 
 # input markovModel = (tokenDic,tagDic,piDic,tagTransitionProbDic,wordLikelihoodProbDic) 
-# return tags - a list of tags, as the size of the input sentence 
+# return: tags - a list of tags, as the size of the input sentence 
 #               the tag of the i word in the sentence is the i elemnet in tags
 #   e.g. tags[0] = 'adverb' -> the tag of the first word is adverb
 #        tags[4] = 'noun' -> the tag of the fifth token is noun  
@@ -281,13 +281,13 @@ def RunViterbyAlg(sentence,markovModel):
     
 
 # evaluate the markov model using the Viterby algorithm
-# returns modelAccuracy - (tagged correctly) / (all tags)
-#         confusionMatrix - dictionary the keys are given tags the values are dictionay 
+# return: modelAccuracy - (tagged correctly) / (all tags)
+# return: confusionMatrix - dictionary the keys are given tags the values are dictionay 
 #                           that the key are true tags and the values are count
 #   e.g.  confusionMatrix['adverb']['noun'] = 5  -> 5 tokens with a real tag of 'noun' tagged as 'adverb'                           
 def EvaluateMarkovModel(evaluationData,markovModel):
     
-    # extract token list and tag list from the evaluation file
+    # extract token list and tag list from the evaluation data
     EvaluationData_Tokens = []
     EvaluationData_Tags = []
     for taggedSentence in  evaluationData:
@@ -384,7 +384,7 @@ def WriteTagToFile(assumeTags):
     outFile.close()
     return True
 
-print("---------------------- HW4 - Hidden Markov model ----------------------\n")  
+print("\n---------------------- HW4 - Hidden Markov model ----------------------\n")  
 TotalStartTime = time.clock()
 
 # get Command Line Arguments
@@ -399,7 +399,7 @@ print("ParseTaggedFile(trainingFile) (sec):\t" ,time.clock() - StartTime)
 
 # list all the tokens with one appearance + get 2 dictionaries - all tokens, all tags
 StartTime = time.clock()
-tokenDic,tagDic,appearOnceList = ListSingleTokens(trainData,"Kukiritza")
+tokenDic,tagDic,appearOnceList = ListSingleTokens(trainData)
 print("ListSingleTokens() (sec):\t\t" ,time.clock() - StartTime)
 
 # calculate the probability that a sentence will start with a specific tag
