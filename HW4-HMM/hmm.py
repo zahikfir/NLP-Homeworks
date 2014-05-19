@@ -360,22 +360,23 @@ def WriteConfusionMatrix(confusionMatrix):
 # tag input text using markov model and viterby algorithm
 # returns assumeTags - a list sentences tags, each element is a list of token tags
 #   e.g assumeTags[0][1] = 'adverb'  -> the tag of second word of the first sentence is 'adverb'
-def GetTextTags(testingData,markovModel):
+def TagInputText(textData,markovModel):
   
     # run viterby alg on each sentence
     assumeTags = []
-    for sentence in testingData:
+    for sentence in textData:
         assumeTags.append( RunViterbyAlg(sentence,markovModel) )  # push sentence tags list into assumeTags
 
     return assumeTags
 
 
-# write the tokens into "hmm_output.txt"
+# write the tags into "hmm_output.txt"
 def WriteTagToFile(assumeTags):
     
     # open the output file
     outFile = codecs.open("hmm_output.txt", "w", "utf-8")
 
+    # write each sentence in a seperate row
     for sentence in assumeTags:
         for tag in sentence:
             outFile.write(tag + " ")
@@ -437,7 +438,7 @@ if (executionMode == '-v'):     # evaluation mode
     WriteConfusionMatrix(confusionMatrix)
     print("PrintConfusionMatrix() (sec):\t\t" ,time.clock() - StartTime)
 
-    # results
+    # print results
     print("\nAll procedures have been completed in ",time.clock() - TotalStartTime," sec")
     print("\tmodel Accuracy is: ",modelAccuracy,"%")
     print("\tfor error analysis see the conf_matrix.txt\n")
@@ -451,15 +452,15 @@ elif(executionMode == '-t'):    # testing mode
 
     # tag the test file using the markov model
     StartTime = time.clock()
-    assumeTags = GetTextTags(testingData,markovModel)
-    print("GetTextTags() (sec):\t\t\t" ,time.clock() - StartTime)
+    assumeTags = TagInputText(testingData,markovModel)
+    print("TagInputText() (sec):\t\t\t" ,time.clock() - StartTime)
 
     # write the tokens into "hmm_output.txt"
     StartTime = time.clock()
     WriteTagToFile(assumeTags)
     print("WriteTagToFile() (sec):\t\t\t" ,time.clock() - StartTime)
 
-    # summary
+    # print summary
     print("\nAll procedures have been completed in ",time.clock() - TotalStartTime," sec")
     print("\tsee hmm_output.txt for tags\n")
 else:
