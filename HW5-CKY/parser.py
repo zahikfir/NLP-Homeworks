@@ -51,6 +51,7 @@ def ReadGrammarFile(grammarFilePath):
     
     # read list of rules
     grammarData = ReadFile(grammarFilePath)
+    nonTerminalsList = []
     
     # for each rule
     for rule in grammarData:
@@ -65,17 +66,78 @@ def ReadGrammarFile(grammarFilePath):
         else:
             grammar[key] = [(rule[1],rule[0])]          # append (rule-head, rule-probability)
         
-    return grammar
+        if (rule[1] not in nonTerminalsList):
+            nonTerminalsList.append(rule[1])
 
-# TODO
-def FillCkyMatrix(sentence,grammar):
+    return grammar, nonTerminalsList
+
+# Creates a three dimensional matrix of size: sentenceLen X sentenceLen X nonTerminalsLen
+def CreateCkyMatrix(sentenceLen, nonTerminalsLen):
+
     ckyMatrix = []
+    for i in range(0,sentenceLen):
+        ckyMatrix.append([])
+        for j in range(0,sentenceLen):
+            ckyMatrix[i].append([])
+            for k in range(0, nonTerminalsLen):
+                ckyMatrix[i][j].append(0)
 
     return ckyMatrix
 
 # TODO
-def BuildDerivationTree(ckyMatrix):
-    derivationTree = []
+def FillCkyMatrix(sentence, grammar, nonTerminalList):
+    
+    ckyMatrix = CreateCkyMatrix(len(sentence), len(nonTerminalList))
+    ckyTraceBackMatrix = CreateCkyMatrix(len(sentence), len(nonTerminalList))
+    
+    for j in range(0, len(sentence)):
+        
+        for rule in grammar[sentence[j]]:
+            nonTerminalIdx = nonTerminalList.index(rule[0])
+            ckyMatrix[j][j][nonTerminalIdx] = float(grammar[sentence[j]][0][1])
+            ckyTraceBackMatrix[j][j][nonTerminalIdx] = sentence[j]
+
+        for i in range(j-1,-1,-1):
+            for k in range(i, j):
+                for nonTerminalIdxB in range(len(nonTerminalList)):
+                    if (ckyMatrix[i][k][nonTerminalIdxB] > 0):
+                        for nonTerminalIdxC in range(len(nonTerminalList)):
+                            if (ckyMatrix[k+1][j][nonTerminalIdxC] > 0):
+                                # create the B C string
+                                currentNonTerminals = nonTerminalList[nonTerminalIdxB]+" "+nonTerminalList[nonTerminalIdxC]
+                                if currentNonTerminals in grammar:
+                                    for rule in grammar[currentNonTerminals]:
+                                        p = float(rule[1]) * ckyMatrix[i][k][nonTerminalIdxB] * ckyMatrix[k+1][j][nonTerminalIdxC]
+                                        # Todo - check for disambiguity
+                                        if (ckyMatrix[i][j][nonTerminalList.index(rule[0])] < p):
+                                            ckyMatrix[i][j][nonTerminalList.index(rule[0])] = p
+                                            ckyTraceBackMatrix[i][j][nonTerminalList.index(rule[0])] = str.format("{0} {1} {2} X {3} {4} {5}",i,k,nonTerminalList[nonTerminalIdxB],k+1,j,nonTerminalList[nonTerminalIdxC])
+
+    return ckyMatrix, ckyTraceBackMatrix
+
+def CreateDerviationTree(ckyTraceBackMatrix, nonTerminalList, i ,j ,k):
+    
+    derivationTree = ""
+
+    derivationTree += "["
+    derivationTree += nonTerminalList[k] + " "
+    trace = (str)(ckyTraceBackMatrix[i][j][k]).split()
+    if (len(trace) > 1):
+        derivationTree += CreateDerviationTree(ckyTraceBackMatrix, nonTerminalList, int(trace[0]), int(trace[1]), nonTerminalList.index(trace[2]))
+        derivationTree += CreateDerviationTree(ckyTraceBackMatrix, nonTerminalList, int(trace[4]), int(trace[5]), nonTerminalList.index(trace[6]))
+    else: derivationTree += trace[0]
+    derivationTree += "]"
+    return derivationTree
+
+
+# TODO
+def BuildDerivationTree(ckyMatrix, ckyTraceBackMatrix, nonTerminalList):
+
+    i = 0
+    j = len(ckyTraceBackMatrix[0]) - 1
+    k = nonTerminalList.index("S")
+
+    derivationTree = CreateDerviationTree(ckyTraceBackMatrix, nonTerminalList, i, j, k)
 
     return derivationTree
 
@@ -94,15 +156,15 @@ TotalStartTime = time.clock()
 grammarFilePath,testFilePath,outputFilePath = GetCommandLineArguments()
 
 # read the grammar file
-grammar = ReadGrammarFile(grammarFilePath)
+grammar, nonTerminalList = ReadGrammarFile(grammarFilePath)
 
 # read the test file 
 testData = ReadFile(testFilePath)
 
 # build derivation tree for each sentence using CKY algorithm
 for sentence in testData:
-    ckyMatrix = FillCkyMatrix(sentence,grammar)
-    derivationTree = BuildDerivationTree(ckyMatrix)
+    ckyMatrix, ckyTraceBackMatrix = FillCkyMatrix(sentence, grammar, nonTerminalList)
+    derivationTree = BuildDerivationTree(ckyMatrix, ckyTraceBackMatrix, nonTerminalList)
     WriteTreeIntoFile(sentence,derivationTree,outputFilePath)
 
 print("\nAll procedures have been completed in ",time.clock() - TotalStartTime," sec")
