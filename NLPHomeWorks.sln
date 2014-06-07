@@ -9,6 +9,8 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "HW3-TextClassifier", "HW3-T
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "HW4-HMM", "HW4-HMM\HW4-HMM.pyproj", "{1C125018-2653-4987-8FED-A4C51945C1AA}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "HW5-CKY", "HW5-CKY\HW5-CKY.pyproj", "{F93FF983-9BDD-4030-AC0F-D2587849A3BD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{1C125018-2653-4987-8FED-A4C51945C1AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C125018-2653-4987-8FED-A4C51945C1AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C125018-2653-4987-8FED-A4C51945C1AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F93FF983-9BDD-4030-AC0F-D2587849A3BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F93FF983-9BDD-4030-AC0F-D2587849A3BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F93FF983-9BDD-4030-AC0F-D2587849A3BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F93FF983-9BDD-4030-AC0F-D2587849A3BD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
