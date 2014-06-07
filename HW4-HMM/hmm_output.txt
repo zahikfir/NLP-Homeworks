@@ -1,0 +1,6 @@
+adjective negation adverb pronoun noun noun noun verb adverb noun punctuation 
+conjunction adjective verb noun numeral noun noun preposition punctuation noun noun punctuation noun noun mwe mwe noun noun noun noun preposition noun punctuation participle verb preposition noun punctuation 
+noun noun verb noun mwe mwe punctuation copula noun preposition noun punctuation conjunction noun verb noun adjective noun preposition noun noun punctuation propername punctuation 
+noun pronoun mwe noun preposition noun noun verb noun noun pronoun noun noun noun quantifier numeral noun punctuation 
+adjective noun noun noun noun punctuation adverb adjective noun punctuation punctuation 
+conjunction noun negation participle preposition noun preposition noun noun punctuation mwe mwe pronoun participle pronoun pronoun mwe preposition punctuation 
