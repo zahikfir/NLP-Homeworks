@@ -27,17 +27,46 @@ def GetCommandLineArguments():
 
 
 # Read data from file 
-# returns fileData: list of sentences, each sentence is a list of tokens
-# fileData[0][1] = 'dog'  -> the second token of the first sentence is dog
-def ReadData(filePath):
+# returns fileData: list of rows, each row is a list of tokens
+# fileData[0][1] = 'dog'  -> the second token of the first row is dog
+def ReadFile(filePath):
     
     fileData = []
-    testFile = codecs.open(filePath,"r","utf-8")     # Open the test file
-    testSentences = testFile.read().lower().split('\n')  # split the data into sentences list           
-    for sentence in testSentences:                           
-        fileData.append(sentence.split())                # split the sentence into tokens list + append
+    file = codecs.open(filePath,"r","utf-8")   # Open the file
+    rows = file.read().split('\n')             # split the data into rows list           
+    for row in rows:                           
+        fileData.append(row.split())           # split the row into tokens list
 
     return fileData
+
+
+# Read the grammar file
+# return grammar = a dictionary where the keys are the rules body and the value is a list of pairs
+#                  each pair is the rule head and the probability
+#   e.g.  for the 2 ruls:   0.1 N -> stops
+#                           0.2 V -> stops
+#                           grammar['stops'] = [('N', '0.1'), ('V', '0.2')]
+def ReadGrammarFile(grammarFilePath):
+    grammar = dict()
+    
+    # read list of rules
+    grammarData = ReadFile(grammarFilePath)
+    
+    # for each rule
+    for rule in grammarData:
+        
+        if len(rule) == 4:              # terminal
+            key = rule[3]               # key is the rule body!            
+        elif len(rule) == 5:            # 2 non-terminal
+            key = rule[3]+" "+rule[4]   # key is the rule body!    
+        
+        if key in grammar:
+            grammar[key].append( (rule[1],rule[0]) )    # append (rule-head, rule-probability) 
+        else:
+            grammar[key] = [(rule[1],rule[0])]          # append (rule-head, rule-probability)
+        
+    return grammar
+
 
 
 print("\n---------------------- HW5 - CKY algorithm ----------------------\n")
@@ -46,10 +75,12 @@ TotalStartTime = time.clock()
 # get Command Line Arguments 
 grammarFilePath,testFilePath,outputFilePath = GetCommandLineArguments()
 
-# parse the test file 
-testData = ReadData(testFilePath)
+# Read the test file 
+testData = ReadFile(testFilePath)
 
-#grammarData = ReadData(grammarFilePath)
+# Read the grammar file
+grammar = ReadGrammarFile(grammarFilePath)
+
 
 print("\nAll procedures have been completed in ",time.clock() - TotalStartTime," sec")
 print("\tresults are in: "+outputFilePath+" file \n")
