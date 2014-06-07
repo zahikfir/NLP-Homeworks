@@ -67,6 +67,24 @@ def ReadGrammarFile(grammarFilePath):
         
     return grammar
 
+# TODO
+def FillCkyMatrix(sentence,grammar):
+    ckyMatrix = []
+
+    return ckyMatrix
+
+# TODO
+def BuildDerivationTree(ckyMatrix):
+    derivationTree = []
+
+    return derivationTree
+
+# TODO
+def WriteTreeIntoFile(sentence,derivationTree,outputFilePath):
+
+    return True
+
+
 
 
 print("\n---------------------- HW5 - CKY algorithm ----------------------\n")
@@ -75,13 +93,23 @@ TotalStartTime = time.clock()
 # get Command Line Arguments 
 grammarFilePath,testFilePath,outputFilePath = GetCommandLineArguments()
 
-# Read the test file 
-testData = ReadFile(testFilePath)
-
-# Read the grammar file
+# read the grammar file
 grammar = ReadGrammarFile(grammarFilePath)
 
+# read the test file 
+testData = ReadFile(testFilePath)
+
+# build derivation tree for each sentence using CKY algorithm
+for sentence in testData:
+    ckyMatrix = FillCkyMatrix(sentence,grammar)
+    derivationTree = BuildDerivationTree(ckyMatrix)
+    WriteTreeIntoFile(sentence,derivationTree,outputFilePath)
 
 print("\nAll procedures have been completed in ",time.clock() - TotalStartTime," sec")
 print("\tresults are in: "+outputFilePath+" file \n")
 print("---------------------- HW5 - CKY algorithm ----------------------\n")
+
+
+
+
+
