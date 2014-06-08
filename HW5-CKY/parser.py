@@ -157,25 +157,15 @@ def WriteTreeIntoFile(sentence,derivationTree,file):
     return True
 
 
-
-
 print("\n---------------------- HW5 - CKY algorithm ----------------------\n")
 TotalStartTime = time.clock()
 
-# get Command Line Arguments 
-grammarFilePath,testFilePath,outputFilePath = GetCommandLineArguments()
+grammarFilePath,testFilePath,outputFilePath = GetCommandLineArguments()     # get Command Line Arguments 
+grammar, nonTerminalList = ReadGrammarFile(grammarFilePath)                 # read the grammar file
+testData = ReadFile(testFilePath)                                           # read the test file 
+outFile = codecs.open(outputFilePath, "w", "utf-8")                         # open the output file
 
-# read the grammar file
-grammar, nonTerminalList = ReadGrammarFile(grammarFilePath)
-
-# read the test file 
-testData = ReadFile(testFilePath)
-
-# open the output file
-outFile = codecs.open(outputFilePath, "w", "utf-8")
-
-# build derivation tree for each sentence using CKY algorithm
-for sentence in testData:
+for sentence in testData:                # build derivation tree for each sentence using CKY algorithm
     if len(sentence) > 0:
         ckyMatrix, ckyTraceBackMatrix = FillCkyMatrix(sentence, grammar, nonTerminalList)
         derivationTree = BuildDerivationTree(ckyMatrix, ckyTraceBackMatrix, nonTerminalList)
