@@ -137,8 +137,8 @@ def BuildDerivationTree(ckyMatrix, ckyTraceBackMatrix, nonTerminalList):
     j = len(ckyTraceBackMatrix[0]) - 1
     k = nonTerminalList.index("S")
 
-    derivationTree = CreateDerviationTree(ckyTraceBackMatrix, nonTerminalList, i, j, k)
-
+    derivationTree = str.format('%0.2E' % ckyMatrix[i][j][k])
+    derivationTree += " " + CreateDerviationTree(ckyTraceBackMatrix, nonTerminalList, i, j, k)
     return derivationTree
 
 # write the derivation tree into file 
