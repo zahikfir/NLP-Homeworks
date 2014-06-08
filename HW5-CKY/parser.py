@@ -141,9 +141,14 @@ def BuildDerivationTree(ckyMatrix, ckyTraceBackMatrix, nonTerminalList):
 
     return derivationTree
 
-# TODO
-def WriteTreeIntoFile(sentence,derivationTree,outputFilePath):
-
+# write the derivation tree into file 
+def WriteTreeIntoFile(sentence,derivationTree,file):
+    for token in sentence:
+        file.write(token+" ")
+    file.write(os.linesep)
+    file.write(derivationTree)
+    file.write(os.linesep)
+    file.write(os.linesep)
     return True
 
 
@@ -161,11 +166,14 @@ grammar, nonTerminalList = ReadGrammarFile(grammarFilePath)
 # read the test file 
 testData = ReadFile(testFilePath)
 
+outFile = codecs.open(outputFilePath, "w", "utf-8")
+
 # build derivation tree for each sentence using CKY algorithm
 for sentence in testData:
-    ckyMatrix, ckyTraceBackMatrix = FillCkyMatrix(sentence, grammar, nonTerminalList)
-    derivationTree = BuildDerivationTree(ckyMatrix, ckyTraceBackMatrix, nonTerminalList)
-    WriteTreeIntoFile(sentence,derivationTree,outputFilePath)
+    if len(sentence) > 0:
+        ckyMatrix, ckyTraceBackMatrix = FillCkyMatrix(sentence, grammar, nonTerminalList)
+        derivationTree = BuildDerivationTree(ckyMatrix, ckyTraceBackMatrix, nonTerminalList)
+        WriteTreeIntoFile(sentence,derivationTree,outFile)
 
 print("\nAll procedures have been completed in ",time.clock() - TotalStartTime," sec")
 print("\tresults are in: "+outputFilePath+" file \n")
