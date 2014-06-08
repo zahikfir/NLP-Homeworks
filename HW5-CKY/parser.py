@@ -143,12 +143,17 @@ def BuildDerivationTree(ckyMatrix, ckyTraceBackMatrix, nonTerminalList):
 
 # write the derivation tree into file 
 def WriteTreeIntoFile(sentence,derivationTree,file):
+    
+    # write the sentence
     for token in sentence:
         file.write(token+" ")
     file.write(os.linesep)
+    
+    # write the derivation tree 
     file.write(derivationTree)
     file.write(os.linesep)
     file.write(os.linesep)
+    
     return True
 
 
@@ -166,6 +171,7 @@ grammar, nonTerminalList = ReadGrammarFile(grammarFilePath)
 # read the test file 
 testData = ReadFile(testFilePath)
 
+# open the output file
 outFile = codecs.open(outputFilePath, "w", "utf-8")
 
 # build derivation tree for each sentence using CKY algorithm
